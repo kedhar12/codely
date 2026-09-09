@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Codely - Multi-Language Interactive Learning, Compiler & Assessment Platform</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Monaco Editor Loader -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.min.js"></script>
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="nav-brand" id="brand-home-btn">
+      <div class="brand-logo-icon">CD</div>
+      <div class="brand-text">Code<span>ly</span></div>
+      <span class="brand-badge">Learning Hub</span>
+    </div>
+
+    <div class="nav-links">
+      <button class="nav-btn active" id="tab-playground">
+        <span>🚀</span> Playground
+      </button>
+      <button class="nav-btn" id="tab-problems">
+        <span>💻</span> Practice Lab
+      </button>
+      <button class="nav-btn" id="tab-mcq">
+        <span>🧠</span> MCQ Quizzes
+      </button>
+      <button class="nav-btn" id="tab-courses">
+        <span>📚</span> Courses
+      </button>
+      <button class="nav-btn" id="tab-assessments">
+        <span>⏱️</span> Assessments
+      </button>
+      <button class="nav-btn" id="tab-dashboard">
+        <span>📊</span> Dashboard
+      </button>
+    </div>
+
+    <div class="nav-actions">
+      <div class="stats-badge streak" title="Current Daily Streak">
+        <span>🔥</span> <span id="user-streak-badge">4</span>d
+      </div>
+      <div class="stats-badge xp" title="Earned XP Points">
+        <span>💎</span> <span id="user-xp-badge">120</span> XP
+      </div>
+      <button class="icon-btn" id="theme-toggle-btn" title="Toggle Theme">
+        <span id="theme-icon">🌙</span>
+      </button>
+
+      <!-- Auth Container in Navbar -->
+      <div id="nav-auth-container">
+        <!-- Logged Out Button -->
+        <button class="btn btn-primary" id="nav-login-btn" style="padding: 0.4rem 0.85rem; font-size: 0.85rem;">
+          <span>🔑</span> Sign In
+        </button>
+
+        <!-- Logged In Profile Menu (Hidden by default) -->
+        <div class="user-profile-wrap" id="user-profile-menu" style="display: none; position: relative;">
+          <button class="user-profile-btn" id="user-profile-toggle">
+            <div class="avatar" id="nav-user-avatar">U</div>
+            <span id="nav-user-name">Learner</span>
+            <span style="font-size: 0.65rem; color: var(--text-muted); margin-left: 0.2rem;">▼</span>
+          </button>
+
+          <!-- Dropdown Menu -->
+          <div class="user-dropdown-menu" id="user-dropdown" style="display: none;">
+            <div class="user-dropdown-header">
+              <div class="dropdown-user-name" id="dropdown-name">Demo Learner</div>
+              <div class="dropdown-user-email" id="dropdown-email">demo@codely.dev</div>
+            </div>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item" id="dropdown-dashboard-btn">
+              <span>📊</span> Student Dashboard
+            </button>
+            <button class="dropdown-item logout" id="dropdown-logout-btn">
+              <span>🚪</span> Sign Out
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="main-container">
+
+    <!-- VIEW 1: PLAYGROUND (Online Multi-Language Compiler) -->
+    <section class="view-section active" id="view-playground">
+      <div class="workbench-layout">
+        <div class="right-panel" style="width: 100%;">
+          <!-- Toolbar -->
+          <div class="editor-toolbar">
+            <div class="toolbar-left">
+              <label for="playground-lang-select" style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Language:</label>
+              <select class="select-dropdown" id="playground-lang-select">
+                <option value="java">Java 23 (OpenJDK)</option>
+                <option value="python">Python 3.14</option>
+                <option value="javascript">JavaScript (Node.js 24)</option>
+                <option value="c">C (GCC 16.2)</option>
+                <option value="cpp">C++ (G++ 16.2)</option>
+                <option value="sql">SQL (Relational Engine)</option>
+              </select>
+              <button class="btn btn-secondary" id="playground-reset-btn" title="Reset to template">
+                <span>🔄</span> Reset
+              </button>
+              <button class="btn btn-secondary" id="playground-download-btn" title="Download Code">
+                <span>📥</span> Download
+              </button>
+            </div>
+            <div class="toolbar-right">
+              <button class="btn btn-run" id="playground-run-btn" title="Ctrl + Enter to run">
+                <span>⚡</span> Run Code
+              </button>
+            </div>
+          </div>
+
+          <!-- Code Editor -->
+          <div class="editor-container" id="playground-editor-box">
+            <div id="playground-editor"></div>
+            <textarea id="playground-fallback-code" class="editor-textarea" style="display: none;" spellcheck="false"></textarea>
+          </div>
+
+          <!-- Bottom Drawer (Console & Stdin) -->
+          <div class="bottom-drawer" style="height: 38%;">
+            <div class="drawer-tabs">
+              <button class="drawer-tab active" data-target="pg-tab-output">
+                <span>🖥️</span> Execution Output
+              </button>
+              <button class="drawer-tab" data-target="pg-tab-stdin">
+                <span>⌨️</span> Custom Input (stdin)
+              </button>
+            </div>
+            <div class="drawer-content">
+              <!-- Output Pane -->
+              <div class="drawer-pane active" id="pg-tab-output">
+                <div class="terminal-meta">
+                  <span id="pg-status-tag">Ready</span>
+                  <span id="pg-time-tag">-- ms</span>
+                </div>
+                <div class="terminal-box" id="pg-terminal-output">Press "Run Code" or Ctrl+Enter to execute program...</div>
+              </div>
+              <!-- Stdin Pane -->
+              <div class="drawer-pane" id="pg-tab-stdin">
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.4rem;">
+                  Enter standard input (stdin) to be passed to your program during execution:
+                </div>
+                <textarea class="stdin-textarea" id="playground-stdin" placeholder="Enter input values here..."></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: PRACTICE LAB (Problems Catalog & Split IDE) -->
+    <section class="view-section" id="view-problems">
+      <!-- Problem Catalog Container -->
+      <div id="problems-catalog-container" class="problems-catalog-view">
+        <div class="catalog-header">
+          <div>
+            <h1 class="catalog-title">Practice Coding Lab</h1>
+            <p class="catalog-subtitle">Sharpen your algorithmic problem solving across Java, Python, C, C++, JavaScript & SQL.</p>
+          </div>
+          <div class="filter-bar">
+            <input type="text" class="search-input" id="problem-search" placeholder="Search problems...">
+            <select class="select-dropdown" id="difficulty-filter">
+              <option value="all">All Difficulties</option>
+              <option value="Easy">Easy</option>
+              <option value="Medium">Medium</option>
+              <option value="Hard">Hard</option>
+            </select>
+          </div>
+        </div>
+
+        <table class="problems-table">
+          <thead>
+            <tr>
+              <th style="width: 50px;">Status</th>
+              <th>Problem Name</th>
+              <th>Category</th>
+              <th>Difficulty</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="problems-table-body">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Problem Split Workbench (Hidden until problem chosen) -->
+      <div id="problem-workbench-container" class="workbench-layout" style="display: none;">
+        <!-- Left Panel: Problem Statement -->
+        <div class="left-panel">
+          <div class="panel-header">
+            <button class="btn btn-secondary" id="back-to-catalog-btn" style="padding: 0.25rem 0.6rem; font-size: 0.8rem;">
+              <span>←</span> Problem List
+            </button>
+            <div id="workbench-difficulty-badge"></div>
+          </div>
+
+          <div class="panel-content">
+            <div class="problem-title-header">
+              <h2 class="problem-title-text" id="workbench-title">Two Sum</h2>
+            </div>
+
+            <div class="problem-meta">
+              <span class="badge badge-tag" id="workbench-category">Arrays</span>
+              <span class="badge badge-tag">Max Score: 50 XP</span>
+            </div>
+
+            <div class="problem-desc" id="workbench-description"></div>
+
+            <div class="section-box">
+              <div class="section-box-title">Input Specification</div>
+              <div style="font-size: 0.88rem; line-height: 1.5; color: var(--text-secondary);" id="workbench-input-spec"></div>
+            </div>
+
+            <div class="section-box">
+              <div class="section-box-title">Output Specification</div>
+              <div style="font-size: 0.88rem; line-height: 1.5; color: var(--text-secondary);" id="workbench-output-spec"></div>
+            </div>
+
+            <div class="section-box">
+              <div class="section-box-title">Constraints</div>
+              <div class="code-snippet-box" id="workbench-constraints"></div>
+            </div>
+
+            <div class="section-box">
+              <div class="section-box-title">
+                <span>Sample Input</span>
+                <button class="copy-btn" id="copy-sample-input-btn">Copy</button>
+              </div>
+              <div class="code-snippet-box" id="workbench-sample-input"></div>
+            </div>
+
+            <div class="section-box">
+              <div class="section-box-title">Sample Output</div>
+              <div class="code-snippet-box" id="workbench-sample-output"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Panel: Code Editor & Test Cases -->
+        <div class="right-panel">
+          <div class="editor-toolbar">
+            <div class="toolbar-left">
+              <label for="workbench-lang-select" style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Language:</label>
+              <select class="select-dropdown" id="workbench-lang-select">
+                <option value="java">Java 23 (OpenJDK)</option>
+                <option value="python">Python 3.14</option>
+                <option value="javascript">JavaScript (Node.js 24)</option>
+                <option value="c">C (GCC 16.2)</option>
+                <option value="cpp">C++ (G++ 16.2)</option>
+                <option value="sql">SQL (Relational Engine)</option>
+              </select>
+              <button class="btn btn-secondary" id="workbench-reset-btn" title="Reset starter code">
+                <span>🔄</span> Reset
+              </button>
+            </div>
+            <div class="toolbar-right">
+              <button class="btn btn-run" id="workbench-run-btn">
+                <span>⚡</span> Run Code
+              </button>
+              <button class="btn btn-submit" id="workbench-submit-btn">
+                <span>🚀</span> Submit Solution
+              </button>
+            </div>
+          </div>
+
+          <!-- Code Editor -->
+          <div class="editor-container" id="workbench-editor-box">
+            <div id="workbench-editor"></div>
+            <textarea id="workbench-fallback-code" class="editor-textarea" style="display: none;" spellcheck="false"></textarea>
+          </div>
+
+          <!-- Bottom Drawer (Test Cases Results & Terminal) -->
+          <div class="bottom-drawer" style="height: 40%;">
+            <div class="drawer-tabs">
+              <button class="drawer-tab active" data-target="wb-tab-testcases">
+                <span>🧪</span> Test Cases Evaluation
+              </button>
+              <button class="drawer-tab" data-target="wb-tab-console">
+                <span>🖥️</span> Console Output
+              </button>
+              <button class="drawer-tab" data-target="wb-tab-stdin">
+                <span>⌨️</span> Custom Input
+              </button>
+            </div>
+            <div class="drawer-content">
+              <!-- Test Cases Evaluation Pane -->
+              <div class="drawer-pane active" id="wb-tab-testcases">
+                <div id="wb-results-summary" class="results-header" style="display: none;">
+                  <div class="results-verdict" id="wb-verdict-title">Pending</div>
+                  <div style="font-size: 0.85rem; color: var(--text-secondary);" id="wb-time-summary">0 ms</div>
+                </div>
+                <div id="wb-test-cases-list" class="test-cases-grid">
+                  <div style="color: var(--text-muted); font-size: 0.88rem; padding: 1rem 0;">
+                    Click <strong>Run Code</strong> to test sample input, or <strong>Submit Solution</strong> to grade against all test suites.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Console Output Pane -->
+              <div class="drawer-pane" id="wb-tab-console">
+                <div class="terminal-meta">
+                  <span id="wb-console-status">Console Ready</span>
+                  <span id="wb-console-time">-- ms</span>
+                </div>
+                <div class="terminal-box" id="wb-console-output">Run code to view output...</div>
+              </div>
+
+              <!-- Custom Stdin Pane -->
+              <div class="drawer-pane" id="wb-tab-stdin">
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.4rem;">
+                  Custom input used when clicking "Run Code":
+                </div>
+                <textarea class="stdin-textarea" id="workbench-stdin"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: MCQ QUIZZES (Dynamic API-Connected Multi-Language Questions) -->
+    <section class="view-section" id="view-mcq">
+      <div class="mcq-container">
+        <!-- Banner & Language Selector -->
+        <div class="mcq-header-banner">
+          <div>
+            <h1 class="catalog-title" style="font-size: 1.5rem;">Interactive MCQ Quizzes</h1>
+            <p class="catalog-subtitle" style="font-size: 0.88rem;">
+              Dynamic questions connected to live API & question banks. Changes on every reload.
+            </p>
+            <div class="mcq-lang-pills" id="mcq-lang-pills">
+              <button class="lang-pill-btn active" data-lang="all">🌐 All Languages</button>
+              <button class="lang-pill-btn" data-lang="java">☕ Java</button>
+              <button class="lang-pill-btn" data-lang="python">🐍 Python</button>
+              <button class="lang-pill-btn" data-lang="javascript">🟨 JavaScript</button>
+              <button class="lang-pill-btn" data-lang="c">⚙️ C</button>
+              <button class="lang-pill-btn" data-lang="cpp">⚡ C++</button>
+              <button class="lang-pill-btn" data-lang="sql">🗄️ SQL</button>
+            </div>
+          </div>
+          <div>
+            <button class="btn btn-secondary" id="mcq-refresh-btn" title="Fetch a brand new set of questions from the API">
+              <span>🔄</span> Fresh Quiz Set
+            </button>
+          </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="mcq-progress-bar-wrap">
+          <div class="mcq-progress-bar-fill" id="mcq-progress-fill"></div>
+        </div>
+
+        <!-- Question Card -->
+        <div class="mcq-question-card" id="mcq-card">
+          <div class="mcq-q-meta">
+            <span style="font-size: 0.88rem; font-weight: 700; color: var(--accent-cyan);" id="mcq-q-counter">
+              Question 1 of 5
+            </span>
+            <div style="display: flex; gap: 0.5rem;" id="mcq-q-badges">
+              <span class="badge badge-tag" id="mcq-lang-badge">Java</span>
+              <span class="badge badge-medium" id="mcq-diff-badge">Medium</span>
+            </div>
+          </div>
+
+          <h2 class="mcq-q-title" id="mcq-question-text">Loading question...</h2>
+
+          <!-- Optional Code Snippet -->
+          <div class="code-snippet-box" id="mcq-code-snippet" style="display: none; margin-bottom: 1.25rem;"></div>
+
+          <!-- Options Grid -->
+          <div class="mcq-options-grid" id="mcq-options-container">
+            <!-- 4 Option buttons rendered here -->
+          </div>
+
+          <!-- Explanation Box (Initially Hidden) -->
+          <div class="mcq-explanation-box" id="mcq-explanation" style="display: none;"></div>
+
+          <!-- Card Footer -->
+          <div class="mcq-footer-nav" style="margin-top: 1.5rem;">
+            <div style="font-size: 0.9rem; font-weight: 600; color: var(--text-secondary);" id="mcq-current-score">
+              Score: 0 / 0
+            </div>
+            <button class="btn btn-primary" id="mcq-next-btn" style="display: none;">
+              <span>Next Question</span> <span>→</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quiz Completion Card (Initially Hidden) -->
+        <div class="mcq-question-card" id="mcq-summary-card" style="display: none; text-align: center; padding: 3rem 2rem;">
+          <div style="font-size: 3.5rem; margin-bottom: 1rem;">🏆</div>
+          <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem;" id="mcq-summary-title">Quiz Completed!</h2>
+          <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 1.1rem;" id="mcq-summary-subtitle">
+            You scored 5 out of 5!
+          </p>
+          <div style="display: flex; justify-content: center; gap: 1rem;">
+            <button class="btn btn-primary" id="mcq-restart-btn">
+              <span>🔄</span> Take Another Quiz
+            </button>
+            <button class="btn btn-secondary" id="mcq-goto-lab-btn">
+              <span>💻</span> Go to Practice Lab
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 4: COURSES (Interactive Learning Tracks) -->
+    <section class="view-section" id="view-courses">
+      <div class="courses-container">
+        <!-- Sidebar -->
+        <div class="courses-sidebar">
+          <div class="panel-header">
+            <div class="panel-title">📚 Course Curriculum</div>
+          </div>
+          <div id="courses-list-container" style="flex: 1; overflow-y: auto;">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- Course Reading Pane -->
+        <div class="course-reading-pane" id="course-content-pane">
+          <!-- Rendered dynamically -->
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 4: ASSESSMENTS (Timed Exams & Lab Tests) -->
+    <section class="view-section" id="view-assessments">
+      <!-- Assessment Catalog -->
+      <div class="assessments-container" id="assessments-catalog-container">
+        <div class="catalog-header">
+          <div>
+            <h1 class="catalog-title">Timed Lab Assessments</h1>
+            <p class="catalog-subtitle">Simulate real university coding lab exams and technical screening assessments.</p>
+          </div>
+        </div>
+
+        <div id="assessments-cards-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); gap: 1.5rem;">
+          <!-- Dynamically populated -->
+        </div>
+      </div>
+
+      <!-- Live Exam Interface (Initially hidden) -->
+      <div id="live-assessment-container" style="display: none; height: 100%; flex-direction: column;">
+        <div class="assessment-exam-banner" style="border-radius: 0; margin-bottom: 0;">
+          <div>
+            <h2 id="exam-title" style="font-size: 1.15rem; font-weight: 700;">University Lab Assessment</h2>
+            <div style="font-size: 0.82rem; color: #a5b4fc; margin-top: 0.2rem;">Codely Automated Grading System</div>
+          </div>
+          <div class="question-palette" id="exam-question-palette">
+            <!-- Palette dots -->
+          </div>
+          <div class="exam-timer">
+            <span>⏱️</span> <span id="exam-clock">45:00</span>
+          </div>
+          <div>
+            <button class="btn btn-submit" id="finish-exam-btn" style="background: linear-gradient(135deg, #e11d48, #be123c);">
+              Finish Exam
+            </button>
+          </div>
+        </div>
+
+        <!-- Exam Split Lab Workbench -->
+        <div id="exam-workbench-wrapper" style="flex: 1; overflow: hidden; display: flex;">
+          <!-- Embedded workbench -->
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 5: DASHBOARD (Student Progress & Stats) -->
+    <section class="view-section" id="view-dashboard">
+      <div class="dashboard-container">
+        <div class="catalog-header">
+          <div>
+            <h1 class="catalog-title">Student Learning Dashboard</h1>
+            <p class="catalog-subtitle">Track your problem-solving accuracy, daily streak, and submission records.</p>
+          </div>
+          <button class="btn btn-secondary" id="dashboard-reset-btn">
+            <span>🔄</span> Reset Progress
+          </button>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="dashboard-stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon solved">🏆</div>
+            <div>
+              <div class="stat-val" id="dash-solved-count">0 / 5</div>
+              <div class="stat-lbl">Problems Solved</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon streak">🔥</div>
+            <div>
+              <div class="stat-val" id="dash-streak-count">4 Days</div>
+              <div class="stat-lbl">Active Streak</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon xp">💎</div>
+            <div>
+              <div class="stat-val" id="dash-xp-count">120 XP</div>
+              <div class="stat-lbl">Total Experience</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon subs">📜</div>
+            <div>
+              <div class="stat-val" id="dash-subs-count">0</div>
+              <div class="stat-lbl">Total Submissions</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Language Proficiency -->
+        <div class="section-box" style="margin-bottom: 2rem;">
+          <div class="section-box-title">Languages Mastered & Used</div>
+          <div id="dash-languages-container" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 0.75rem;">
+            <!-- Language Pills -->
+          </div>
+        </div>
+
+        <!-- Submissions History -->
+        <div class="section-box">
+          <div class="section-box-title">Recent Submissions Log</div>
+          <table class="problems-table" style="margin-top: 0.75rem;">
+            <thead>
+              <tr>
+                <th>Problem</th>
+                <th>Language</th>
+                <th>Verdict</th>
+                <th>Score</th>
+                <th>Runtime</th>
+                <th>Date & Time</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="dash-submissions-table">
+              <tr>
+                <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                  No submissions yet. Start solving problems in the Practice Lab!
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- View Code Modal -->
+  <div class="modal-overlay" id="code-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 id="code-modal-title" style="font-size: 1.1rem;">Submitted Solution</h3>
+        <button class="icon-btn" id="close-code-modal-btn">✕</button>
+      </div>
+      <div class="modal-body">
+        <pre class="terminal-box" id="code-modal-content" style="max-height: 400px;"></pre>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" id="close-code-modal-btn2">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Exam Finish Modal -->
+  <div class="modal-overlay" id="exam-score-modal">
+    <div class="modal-box" style="max-width: 500px; text-align: center;">
+      <div class="modal-header">
+        <h3 style="font-size: 1.2rem;">Assessment Completed!</h3>
+      </div>
+      <div class="modal-body" style="padding: 2rem;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">🎓</div>
+        <h2 id="exam-final-score" style="font-size: 1.75rem; color: var(--accent-green); margin-bottom: 0.5rem;">
+          Score: 100 / 100
+        </h2>
+        <p id="exam-final-verdict" style="color: var(--text-secondary); line-height: 1.6; margin-bottom: 1rem;">
+          You successfully cleared all test cases for the lab assessment!
+        </p>
+      </div>
+      <div class="modal-footer" style="justify-content: center;">
+        <button class="btn btn-primary" id="exit-exam-btn">Return to Assessments</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auth Modal (Login / Sign Up) -->
+  <div class="modal-overlay" id="auth-modal">
+    <div class="modal-box" style="max-width: 440px;">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <div class="brand-logo-icon" style="width: 28px; height: 28px; font-size: 0.95rem;">CD</div>
+          <h3 id="auth-modal-title" style="font-size: 1.15rem; font-weight: 700;">Sign in to Codely</h3>
+        </div>
+        <button class="icon-btn" id="close-auth-modal-btn">✕</button>
+      </div>
+
+      <!-- Auth Tabs Switcher -->
+      <div class="auth-tabs-row">
+        <button class="auth-tab-btn active" id="tab-login-btn">Sign In</button>
+        <button class="auth-tab-btn" id="tab-signup-btn">Create Account</button>
+      </div>
+
+      <div class="modal-body" style="padding: 1.5rem;">
+        <!-- Notification Message Banner -->
+        <div id="auth-banner" style="display: none; padding: 0.75rem 1rem; border-radius: var(--radius-sm); font-size: 0.85rem; margin-bottom: 1.25rem;"></div>
+
+        <!-- 1. LOGIN FORM -->
+        <form id="auth-login-form">
+          <div class="form-group">
+            <label class="form-label" for="login-identifier">Username or Email</label>
+            <input type="text" class="form-input" id="login-identifier" placeholder="e.g. demo@codely.dev" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="login-password">Password</label>
+            <input type="password" class="form-input" id="login-password" placeholder="••••••••" required>
+          </div>
+          <button type="submit" class="btn btn-primary" id="login-submit-btn" style="width: 100%; justify-content: center; padding: 0.65rem; margin-top: 0.5rem;">
+            <span>Sign In</span> <span>→</span>
+          </button>
+
+          <!-- Quick Demo Login Option -->
+          <div style="margin: 1.25rem 0; text-align: center; position: relative;">
+            <div style="border-top: 1px solid var(--border-color);"></div>
+            <span style="position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--bg-secondary); padding: 0 0.6rem; font-size: 0.75rem; color: var(--text-muted);">
+              OR
+            </span>
+          </div>
+
+          <button type="button" class="btn btn-secondary" id="quick-demo-btn" style="width: 100%; justify-content: center; padding: 0.65rem;">
+            <span>⚡</span> Quick Demo Student Login
+          </button>
+        </form>
+
+        <!-- 2. SIGN UP FORM (Initially Hidden) -->
+        <form id="auth-signup-form" style="display: none;">
+          <div class="form-group">
+            <label class="form-label" for="signup-name">Full Name</label>
+            <input type="text" class="form-input" id="signup-name" placeholder="e.g. Alex Sharma" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="signup-username">Username</label>
+            <input type="text" class="form-input" id="signup-username" placeholder="e.g. alex_coder" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="signup-email">Email Address</label>
+            <input type="email" class="form-input" id="signup-email" placeholder="alex@university.edu" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="signup-password">Password (min 6 characters)</label>
+            <input type="password" class="form-input" id="signup-password" placeholder="••••••••" required minlength="6">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="signup-password-confirm">Confirm Password</label>
+            <input type="password" class="form-input" id="signup-password-confirm" placeholder="••••••••" required minlength="6">
+          </div>
+          <button type="submit" class="btn btn-submit" id="signup-submit-btn" style="width: 100%; justify-content: center; padding: 0.65rem; margin-top: 0.5rem;">
+            <span>Create Account</span> <span>✨</span>
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Script -->
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+# Byte-code and build files
+bin/
+*.class
+
+# Execution sandbox and temporary files
+temp/
+*.tmp
+*.log
+
+# Executables
+*.exe
+*.o
+
+# OS and IDE files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
