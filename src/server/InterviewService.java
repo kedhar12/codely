@@ -317,10 +317,10 @@ public class InterviewService {
         ));
 
         // ==========================================
-        // 2. HR & BEHAVIORAL QUESTIONS (STAR Method)
+        // 2. HR & BEHAVIORAL QUESTIONS (5 Questions per topic, STAR Method)
         // ==========================================
 
-        // --- 1. Tell Me About Yourself ---
+        // --- 1. Tell Me About Yourself (5 Questions) ---
         questionBank.add(new InterviewQuestion(
             "hr-about-1", "hr", "about-me", "Medium",
             "Tell Me About Yourself (The Present-Past-Future Formula)",
@@ -332,7 +332,51 @@ public class InterviewService {
             List.of("Structure response using Present-Past-Future formula focusing on key achievements and alignment with the role", "Recite your entire life story and childhood hobbies", "Read your resume word-for-word from top to bottom", "Ask the interviewer to read your LinkedIn profile instead"), 0
         ));
 
-        // --- 2. Strengths and Weaknesses ---
+        questionBank.add(new InterviewQuestion(
+            "hr-about-2", "hr", "about-me", "Easy",
+            "Walk Me Through Your Resume & Technical Evolution",
+            "Walk me through the milestones of your background and the key decisions that shaped your engineering trajectory.",
+            null,
+            "Walkthrough Blueprint:\n\n1. The Foundation: \"I started in computer science fascinated by algorithmic problem-solving and software architecture. Early on, I focused on core fundamentals—data structures, memory management in C/C++, and object-oriented design in Java.\"\n\n2. The Shift to Real Systems: \"As I built larger applications, I realized that writing working code is only half the battle; the real challenge is resilience, concurrency, and user experience. That led me to architect end-to-end full-stack platforms, integrating secure authentication and automated grading engines.\"\n\n3. What Drives Me Today: \"Today, I specialize in building performant developer tools and distributed services. I look for roles where code quality, automated testing, and thoughtful system design are celebrated.\"",
+            List.of("Logical narrative arc linking past choices to current skills", "Focus on technical evolution rather than job titles alone", "Demonstrate passion for engineering craft and scalable design"),
+            "Interviewers want to see that your career choices were deliberate, not accidental.",
+            List.of("Present a coherent narrative showing intentional growth and passion for solving complex engineering challenges", "List every company and project in reverse chronological order without context", "Say you only chose software engineering because of high salaries", "Criticize former employers for giving you boring tasks"), 0
+        ));
+
+        questionBank.add(new InterviewQuestion(
+            "hr-about-3", "hr", "about-me", "Hard",
+            "Describe a Complex Technical Project You Are Most Proud Of",
+            "Of all the systems or applications you've architected, which project are you most proud of and what was your specific contribution?",
+            null,
+            "STAR Framework Response:\n\n- Situation: \"I led the development of Codely, an interactive multi-language coding and automated assessment platform designed to handle live concurrent code executions across 6 programming languages.\"\n- Task: \"Our primary architectural bottleneck was code isolation and execution latency: running untrusted user submissions concurrently without crashing the host server or exhausting thread pools.\"\n- Action: \"I leveraged Java 21 Virtual Threads (Project Loom) to handle incoming requests asynchronously without thread pinning. I designed a sandbox execution engine with strict process timeouts (2500ms) and built a normalized 9-table MySQL relational database schema with indexed progress tracking.\"\n- Result: \"The platform achieved sub-200ms submission grading, scaled to 500+ concurrent simulated users with zero crashes, and passed 100% automated integration test suites.\"",
+            List.of("Clear technical problem statement and personal ownership", "Specific architectural choices explained (Virtual Threads, process sandboxing)", "Quantifiable outcomes (latency, concurrency, test pass rate)"),
+            "Take personal credit where due ('I designed', 'I implemented'), but acknowledge team dependencies and tools honestly.",
+            List.of("Use the STAR framework highlighting specific technical obstacles, your architectural decisions, and measurable performance results", "Describe a generic school project you barely touched", "Say the project succeeded because you worked 18 hours every day", "Refuse to explain technical details because it's proprietary"), 0
+        ));
+
+        questionBank.add(new InterviewQuestion(
+            "hr-about-4", "hr", "about-me", "Easy",
+            "Continuous Learning: How Do You Keep Up with Fast-Moving Tech?",
+            "With frameworks, languages, and AI tooling advancing rapidly, what is your systematic continuous learning routine?",
+            null,
+            "Continuous Learning Routine:\n\n1. Official Sources & RFCs: \"Rather than relying solely on tutorial videos, I prioritize reading official language specifications, release notes (like Java JEPs or Python PEPs), and RFC proposals to understand the 'why' behind new features.\"\n2. Hands-on Proofs of Concept: \"When a new paradigm emerges—such as Java Virtual Threads or Node.js native test runners—I build a small, isolated prototype benchmark to measure real-world performance differences firsthand.\"\n3. Tech Community & Engineering Blogs: \"I regularly read engineering blogs from high-scale tech organizations (like Uber, Netflix, and Discord) to learn how production distributed systems handle real scale and outages.\"",
+            List.of("Systematic habits over sporadic reading", "Hands-on building rather than passive reading", "Following official specs and industry architecture blogs"),
+            "Show curiosity and intellectual rigor. Interviewers love candidates who build prototypes to test claims.",
+            List.of("Combine official language specifications, hands-on proof-of-concept benchmarks, and production engineering blogs", "Say you only learn when your manager forces you to take a course", "Rely entirely on 30-second TikTok coding videos", "Claim you already know everything so you never need to learn anything new"), 0
+        ));
+
+        questionBank.add(new InterviewQuestion(
+            "hr-about-5", "hr", "about-me", "Medium",
+            "What Core Values Guide Your Daily Engineering Work?",
+            "Beyond writing code that compiles, what engineering values guide how you design, test, and collaborate?",
+            null,
+            "Core Engineering Values:\n\n1. Empathy for the Next Engineer: \"I write clean, readable code and maintain clear documentation because code is read ten times more often than it is written. My goal is that any teammate touching my code six months from now understands the design rationale immediately.\"\n2. Automated Verification Over Hope: \"I never assume code works without automated tests. Test suites are not an afterthought; they are living documentation that enables teams to refactor with confidence.\"\n3. Pragmatic Simplicity: \"I follow the KISS and YAGNI principles. I resist the temptation to over-engineer complex abstractions until real user requirements and data justify them.\"",
+            List.of("Maintainability and code empathy", "Test automation and reliability", "Pragmatism over premature optimization"),
+            "Demonstrates maturity: junior developers chase cleverness; senior developers value clarity and reliability.",
+            List.of("Empathy for teammates through clean code, rigorous automated testing, and pragmatic simplicity over premature cleverness", "Writing the most compressed, unreadable one-liners to show intelligence", "Shipping directly to production on Friday without testing", "Refusing to document code to preserve job security"), 0
+        ));
+
+        // --- 2. Strengths and Weaknesses (5 Questions) ---
         questionBank.add(new InterviewQuestion(
             "hr-strength-1", "hr", "strengths-weaknesses", "Medium",
             "What Are Your Greatest Strengths and Weaknesses?",
@@ -344,7 +388,51 @@ public class InterviewService {
             List.of("State a real, non-fatal weakness coupled with the proactive system or habit you adopted to improve it", "Claim you have no weaknesses because you are flawless", "Say 'I work too hard and care too much about perfection'", "Confess that you struggle to wake up on time for meetings"), 0
         ));
 
-        // --- 3. Why Should We Hire You? ---
+        questionBank.add(new InterviewQuestion(
+            "hr-strength-2", "hr", "strengths-weaknesses", "Hard",
+            "Tell Me About a Time You Failed or Made a Serious Mistake",
+            "Describe a real situation where a code deployment or design decision went wrong. How did you remediate the issue and prevent future occurrences?",
+            null,
+            "STAR Remediation Formula:\n\n- Situation: \"During an early deployment of a student submission scoring pipeline, I updated a database constraint without accounting for concurrent transactions during peak quiz submissions.\"\n- Task: \"Within 10 minutes of release, several submission writes failed with deadlock exceptions, locking out roughly 40 active students.\"\n- Action: \"I immediately rolled back to the previous stable release, mitigating user impact within 4 minutes. Once stable, I initiated a blameless post-mortem. I reproduced the deadlock in our staging environment using simulated concurrent loads, adjusted transaction isolation from Serializable to Repeatable Read with row-level locks, and added a regression test simulating 200 concurrent writes.\"\n- Result: \"We re-deployed the fix with zero downtime, and our new automated concurrency test suite prevented similar lock contention issues in all subsequent releases.\"",
+            List.of("Take immediate accountability without blaming others", "Rapid mitigation (rollback/hotfix) followed by root-cause analysis", "Instituting automated safeguards so the mistake cannot happen again"),
+            "Blameless accountability and systemic prevention are what separate mature engineers from novices.",
+            List.of("Own the mistake openly, describe the immediate rollback, conduct a blameless post-mortem, and implement automated regression tests", "Blame the QA team for failing to catch your bug", "Hide the error logs and hope no users noticed", "Quit the project immediately to avoid embarrassment"), 0
+        ));
+
+        questionBank.add(new InterviewQuestion(
+            "hr-strength-3", "hr", "strengths-weaknesses", "Medium",
+            "Handling Critical Feedback in Code Reviews",
+            "How do you respond when a colleague or senior architect leaves critical comments on your pull request questioning your design?",
+            null,
+            "Professional Code Review Mindset:\n\n1. Separate Ego from Code: \"I view code reviews as a collaborative quality gate, not a personal critique. The goal is the health and longevity of the codebase.\"\n2. Assume Positive Intent: \"If a reviewer questions my design, my first step is to genuinely understand their perspective. I ask clarifying questions like: 'Could you elaborate on the failure mode you foresee here?'\"\n3. Data-Driven Evaluation: \"If there is a legitimate trade-off—such as memory consumption versus readability—I write a quick benchmark or reference documentation rather than arguing personal aesthetic preferences.\"\n4. Gratitude & Growth: \"Once aligned, I thank the reviewer for the catch and document the design decision in the code comments or PR description for future reference.\"",
+            List.of("Separate personal identity from pull requests", "Curious, non-defensive communication", "Using data and benchmarks to resolve technical trade-offs"),
+            "Interviewers look for emotional maturity and coachability. Defensive developers slow down team velocity.",
+            List.of("Assume positive intent, ask clarifying questions, evaluate trade-offs with data, and embrace reviews as collaborative learning", "Ignore the review comments and merge the code directly to main", "Argue angrily with the reviewer on Slack", "Delete the pull request in frustration"), 0
+        ));
+
+        questionBank.add(new InterviewQuestion(
+            "hr-strength-4", "hr", "strengths-weaknesses", "Easy",
+            "Learning an Unfamiliar Technology Under Extreme Time Pressure",
+            "Tell me about a time you had to deliver a feature using a programming language, library, or tool you had never touched before.",
+            null,
+            "STAR Fast-Learning Framework:\n\n- Situation: \"Our project required implementing real-time browser code editing, but none of our team had worked with the Monaco Editor internals or its complex WebWorker architecture.\"\n- Task: \"I had 5 days to integrate the Monaco Editor with syntax highlighting, custom theme support, and a fallback mechanism for slow network connections.\"\n- Action: \"Instead of feeling overwhelmed, I broke the challenge down: Day 1: read official Microsoft Monaco documentation and cloned minimal samples. Day 2: isolated CDN script loading and implemented a 2.5-second watchdog timer to fall back to native textareas if CDN was blocked. Day 3-4: wired language switching and tab indentation. Day 5: cross-browser testing.\"\n- Result: \"Delivered the editor integration on schedule. It handled 6 languages smoothly and seamlessly fell back without locking out users on restricted corporate networks.\"",
+            List.of("Deconstruct complex technologies into structured milestones", "Proactive defensive engineering (e.g. fallback watchdogs)", "Delivering reliable functionality on a tight timeline"),
+            "Demonstrates resourcefulness and structured execution under pressure.",
+            List.of("Deconstruct the unknown technology into incremental milestones, study core documentation, and build a working defensive prototype", "Complain to management that the technology is too difficult", "Copy unverified code from random forums without reading it", "Delay the project by two months while trying to read every source file"), 0
+        ));
+
+        questionBank.add(new InterviewQuestion(
+            "hr-strength-5", "hr", "strengths-weaknesses", "Hard",
+            "Managing Multiple Competing Priorities & Avoiding Burnout",
+            "When production bugs, sprint feature deadlines, and team inquiries all compete for your attention simultaneously, how do you manage your time?",
+            null,
+            "Prioritization & Triage Strategy:\n\n1. Severity Triage: \"I classify tasks using an impact vs urgency matrix. A production outage or security vulnerability affecting active users always takes immediate precedence over non-blocking sprint tasks.\"\n2. Transparent Stakeholder Communication: \"If resolving a critical incident will delay a promised sprint feature, I communicate with my Product Manager immediately. I explain the trade-offs and help adjust expectations rather than quietly burning out.\"\n3. Time-Boxing Deep Work: \"I block 2-3 hour uninterrupted focus windows on my calendar for complex algorithmic work and batch communication (emails, Slack messages, PR reviews) into dedicated windows.\"\n4. Sustainable Pace: \"I recognize that sustained engineering excellence requires clarity and focus. Working 16-hour days produces bug-ridden code that costs double to fix later.\"",
+            List.of("Severity triage based on user impact", "Proactive communication with product managers", "Time-boxing deep work vs communication", "Commitment to sustainable engineering practices"),
+            "Shows executive maturity. Great engineers know how to say 'no' constructively to protect quality.",
+            List.of("Triage by severity and user impact, communicate schedule trade-offs transparently, and protect focused deep work windows", "Attempt to do all tasks simultaneously resulting in half-baked code", "Work all night secretly until burning out", "Ignore production bugs to finish the fun feature first"), 0
+        ));
+
+        // --- 3. Why Should We Hire You? (5 Questions) ---
         questionBank.add(new InterviewQuestion(
             "hr-hire-1", "hr", "why-hire-you", "Medium",
             "Why Should We Hire You?",
@@ -356,7 +444,51 @@ public class InterviewService {
             List.of("Demonstrate how your skills solve their specific technical needs, backed by fast adaptability and collaborative culture fit", "Explain that you need a job to pay your rent", "State that you are smarter than other candidates", "Argue that they have already spent 45 minutes interviewing you"), 0
         ));
 
-        // --- 4. Why Do You Want to Join This Company? ---
+        questionBank.add(new InterviewQuestion(
+            "hr-hire-2", "hr", "why-hire-you", "Easy",
+            "What Is Your Core Differentiator as an Engineer?",
+            "What specific quality or approach sets you apart from other qualified software engineers with similar resumes?",
+            null,
+            "The Core Differentiator (End-to-End Product Ownership):\n\n\"What sets me apart is my commitment to end-to-end product ownership. Many engineers stop caring once code compiles and passes local tests. For me, a feature is only complete when it is:\n1. Resilient under peak load in production.\n2. Monitored with clear telemetry and error metrics.\n3. Genuinely intuitive and delightfully responsive for the end user.\n\nBecause I think like both a systems engineer and a product user, I anticipate edge cases early in the design cycle, saving the team weeks of downstream refactoring and customer support tickets.\"",
+            List.of("End-to-end ownership mindset", "Bridging systems engineering with product user empathy", "Preventing bugs before code is written through edge-case anticipation"),
+            "Companies look for engineers who care about business outcomes, not just tickets closed.",
+            List.of("Commitment to end-to-end product ownership, combining systems resilience with user empathy to solve business problems", "Ability to write code without ever compiling or testing it", "Willingness to take all credit for team accomplishments", "Claiming to type faster than any other engineer"), 0
+        ));
+
+        questionBank.add(new InterviewQuestion(
+            "hr-hire-3", "hr", "why-hire-you", "Hard",
+            "Balancing Engineering Velocity with Technical Debt",
+            "How do you decide between shipping a quick workaround to meet an urgent business deadline vs taking the time to build a robust architecture?",
+            null,
+            "Pragmatic Technical Debt Framework:\n\n1. Intentionality: \"Technical debt is like financial debt: taking on a small amount intentionally to capture a time-sensitive business opportunity is smart, as long as you plan for the interest payments.\"\n2. Identifying the Red Line: \"I will never compromise on security, data integrity, or core transactional reliability for the sake of speed. However, I am willing to simplify non-critical UI features or hardcode configuration for a fast MVP.\"\n3. Documentation & Debt Repayment: \"Whenever we take on a tactical shortcut, I ensure two things: First, we add a `// TODO(tech-debt)` note with context and ticket number. Second, we file a backlog ticket in Jira so the debt is scheduled for refactoring in the next stabilization sprint.\"",
+            List.of("Technical debt as a conscious financial trade-off", "Zero compromise on security and data integrity", "Formal tracking and scheduling of debt repayment"),
+            "Shows that you are a business-minded engineer who balances speed with architectural responsibility.",
+            List.of("Treat technical debt as an intentional, tracked trade-off—never compromising data integrity and scheduling prompt repayment", "Always refuse to ship unless the architecture is 100% theoretically flawless", "Never worry about clean code because shipping fast is all that matters", "Rewrite the entire codebase from scratch every three months"), 0
+        ));
+
+        questionBank.add(new InterviewQuestion(
+            "hr-hire-4", "hr", "why-hire-you", "Medium",
+            "Dealing with Ambiguous Requirements and Incomplete Specs",
+            "If your product manager hands you a vague feature request like 'improve search performance', how do you proceed?",
+            null,
+            "Ambiguity Resolution Protocol:\n\n1. Quantify the Problem: \"First, I clarify the baseline. What is the current search latency? Is it 95th percentile or median? Is the bottleneck network round-trip, database querying, or frontend rendering?\"\n2. Define Success Metrics: \"I partner with the Product Manager to establish clear acceptance criteria: e.g. 'Reduce p95 search latency from 1.2s to under 300ms for 100,000 records.'\"\n3. User Journey & Edge Cases: \"I map out user scenarios: What happens on empty queries? Special characters? Network timeouts?\"\n4. Propose Options with Trade-Offs: \"I draft a 1-page design doc with two approaches (e.g. database B-Tree index optimization vs introducing in-memory Redis caching) and present recommendations.\"",
+            List.of("Transforming vague goals into measurable SLA metrics", "Root-cause bottleneck identification before writing code", "Writing concise design docs with options and trade-offs"),
+            "Proves autonomy: you don't require hand-holding; you drive clarity from chaos.",
+            List.of("Quantify current metrics, define clear acceptance SLAs, map edge cases, and present structured architectural trade-offs", "Start coding randomly without asking any questions", "Complain that product managers never write good specifications", "Wait silently for weeks until someone gives you more instructions"), 0
+        ));
+
+        questionBank.add(new InterviewQuestion(
+            "hr-hire-5", "hr", "why-hire-you", "Hard",
+            "Your 30-60-90 Day Impact Plan",
+            "If hired for this engineering position today, what does your roadmap for success look like over your first 3 months?",
+            null,
+            "Structured 30-60-90 Day Blueprint:\n\n- Days 1-30 (Learn & Integrate): \"Master the codebase, development workflows, CI/CD pipelines, and coding standards. Deliver my first production bug fix or small feature within Week 2. Build strong relationships with teammates and understand the business domain.\"\n- Days 31-60 (Deliver & Collaborate): \"Take on medium-to-large feature tickets independently. Actively participate in PR reviews, providing thoughtful feedback. Identify small friction points in local dev setup and propose lightweight documentation improvements.\"\n- Days 61-90 (Own & Elevate): \"Lead the end-to-end design and delivery of an impactful system component. Propose optimizations to automated test suites or latency bottlenecks. Begin mentoring newer team members and contributing to sprint planning.\"",
+            List.of("Structured progression: Learn -> Deliver -> Own", "Early win in the first 2 weeks", "Balancing technical contribution with team collaboration"),
+            "Hiring managers love this because it proves you hit the ground running with zero onboarding friction.",
+            List.of("Progress systematically: Days 1-30 learning and shipping early fixes; Days 31-60 delivering independent features; Days 61-90 driving system ownership", "Spend the first 90 days silently observing without touching any code", "Demand that the team rewrite their codebase using your preferred framework on Day 1", "Focus exclusively on office perks and vacation scheduling"), 0
+        ));
+
+        // --- 4. Why Do You Want to Join This Company? (5 Questions) ---
         questionBank.add(new InterviewQuestion(
             "hr-company-1", "hr", "why-company", "Medium",
             "Why Do You Want to Work at Our Company?",
@@ -368,7 +500,51 @@ public class InterviewService {
             List.of("Cite specific products, engineering blog posts, architectural challenges, and cultural values that align with your career goals", "Mention that the company office is located close to your house", "State that you applied to 50 companies and this was the first to respond", "Compliment the recruiter's polite email style"), 0
         ));
 
-        // --- 5. Where Do You See Yourself in 5 Years? ---
+        questionBank.add(new InterviewQuestion(
+            "hr-company-2", "hr", "why-company", "Easy",
+            "What Impresses You Most About Our Engineering & Product Architecture?",
+            "What specific features, user experiences, or engineering aspects of our platform caught your attention?",
+            null,
+            "Product & Architecture Analysis:\n\n\"What impresses me most is how seamlessly your platform balances high performance with user simplicity. Specifically:\n1. Low-Latency Execution: Managing high-throughput interactive workloads with sub-second feedback demonstrates that your backend concurrency and caching layers are exceptionally well-architected.\n2. Developer Experience: The clean design of your APIs and developer dashboard shows that your engineering culture respects the end-user's time.\n3. Resilience: Delivering reliable services with high availability despite fluctuating traffic bursts proves that your team takes observability and automated testing seriously.\n\nI want to work with engineers who set such high technical standards.\"",
+            List.of("Highlight concrete technical attributes (latency, API design, resilience)", "Demonstrate genuine familiarity with the product", "Compliment the engineering team's high technical bar"),
+            "Interviewers want to see that you tested their product and appreciate the engineering beneath the hood.",
+            List.of("Analyze specific technical strengths like low latency, intuitive API design, and resilient architecture under scale", "Admit that you have never tried using the company's product", "Say all software platforms look the same to you anyway", "State that you only like the company logo colors"), 0
+        ));
+
+        questionBank.add(new InterviewQuestion(
+            "hr-company-3", "hr", "why-company", "Medium",
+            "Which of Our Company Core Values Resonates Most With You?",
+            "Our company champions core principles like 'Customer Obsession', 'Radical Ownership', and 'Learn & Be Curious'. Which one reflects your work style?",
+            null,
+            "Connecting Personal Practice to Company Values:\n\n\"The value that resonates most deeply with me is **'Radical Ownership'**.\nTo me, ownership means that when I encounter a bug, a slow query, or poorly documented code, I never say 'that's not my job'. When building our platform's grading pipeline, even though our issue tracker only specified core compiler execution, I took ownership of implementing sandbox memory limits and fallback textareas because I knew users on slow networks would otherwise suffer.\n\nOwnership means caring about the entire system from database row to user browser click, and taking proactive responsibility for its health.\"",
+            List.of("Select one value and tie it directly to a personal engineering story", "Define what the value means in practical day-to-day terms", "Demonstrate impact beyond the narrow scope of ticket descriptions"),
+            "Never recite their website definitions back to them; tell a personal story illustrating the value in action.",
+            List.of("Choose a specific value and share a concrete engineering project where you embodied that principle in practice", "Claim that you love all 20 values equally without providing any examples", "Say core values are just corporate marketing slogans", "Ask the interviewer to remind you what their company values are"), 0
+        ));
+
+        questionBank.add(new InterviewQuestion(
+            "hr-company-4", "hr", "why-company", "Easy",
+            "The Reverse Interview: What Questions Do You Have for Us?",
+            "At the end of your interview, the hiring manager asks 'Do you have any questions for me?'. What strategic questions should you ask?",
+            null,
+            "High-Impact Reverse Interview Questions:\n\n1. On Team Engineering Culture:\n\"How does your team handle the balance between shipping new product features and addressing architectural technical debt?\"\n2. On Deployment & Reliability:\n\"What does your current deployment pipeline look like, and how frequently does the team deploy code to production?\"\n3. On Team Success & Metrics:\n\"What would a successful first 6 months look like for the engineer stepping into this role? What would make you say 'we made the absolute right hire'?\"\n4. On Engineering Challenges:\n\"What is the single biggest architectural or scalability bottleneck the team is currently working to solve over the next two quarters?\"",
+            List.of("Never say 'No, I have no questions'", "Ask about engineering trade-offs, CI/CD frequency, and onboarding metrics", "Demonstrate that you evaluate the company as much as they evaluate you"),
+            "Candidates who ask insightful questions stand out immediately as thoughtful, senior-minded engineers.",
+            List.of("Ask strategic questions about deployment frequency, technical debt balance, and what success looks like in the first 6 months", "Say 'Nope, you answered everything' and leave immediately", "Ask how quickly you can get a promotion and a salary raise", "Ask if the company monitors your screen when working from home"), 0
+        ));
+
+        questionBank.add(new InterviewQuestion(
+            "hr-company-5", "hr", "why-company", "Hard",
+            "Where Do You See Our Industry & Product Heading in 3 Years?",
+            "How do you view upcoming technological trends (AI agents, edge computing, serverless) impacting our market, and how should we adapt?",
+            null,
+            "Strategic Industry Synthesis:\n\n1. Shift Toward Intelligent Developer Tooling:\n\"Over the next 3 years, developer and learning platforms will shift from static code editors to AI-augmented interactive pair programmers that analyze semantic errors in real-time.\"\n2. Low-Latency Edge Sandboxing:\n\"As WebAssembly and microVM runtimes mature, client-side and edge execution will dramatically lower hosting costs and deliver zero-latency execution to global learners.\"\n3. Why This Company is Well Positioned:\n\"Because your platform already has strong curriculum structures and a robust core execution engine, integrating intelligent evaluation and adaptive learning will cement your position as the market leader.\"",
+            List.of("Demonstrate forward-looking architectural vision", "Understand business economics (edge hosting cost reduction)", "Tie industry trends directly back to the company's competitive advantage"),
+            "Proves you think beyond individual pull requests and can contribute to strategic architectural roadmaps.",
+            List.of("Articulate relevant industry shifts (AI pair-programming, microVM sandboxes) and explain how the company can capitalize", "Say that AI will replace all software engineers next month", "Claim that technology will never change from how it is today", "State that business strategy is only for executives to care about"), 0
+        ));
+
+        // --- 5. Where Do You See Yourself in 5 Years? (5 Questions) ---
         questionBank.add(new InterviewQuestion(
             "hr-fiveyears-1", "hr", "five-years", "Easy",
             "Where Do You See Yourself in 5 Years?",
@@ -380,7 +556,51 @@ public class InterviewService {
             List.of("Outline a realistic progression from mastering the codebase to leading architecture and mentoring engineers within the company", "Say you plan to start a competing startup in two years", "Say you want to take the interviewer's job", "State that you have no idea what you will do next week"), 0
         ));
 
-        // --- 6. Teamwork and Communication Questions ---
+        questionBank.add(new InterviewQuestion(
+            "hr-fiveyears-2", "hr", "five-years", "Medium",
+            "Individual Contributor (IC) Track vs Engineering Management",
+            "As your career evolves, do you see yourself pursuing the Staff/Principal Engineer technical track or transitioning into Engineering Management?",
+            null,
+            "Dual-Track Career Perspective:\n\n\"My immediate focus over the next few years is deep technical mastery on the Individual Contributor (IC) track—designing scalable distributed systems, tackling performance bottlenecks, and writing clean, mission-critical code.\n\nHowever, I also enjoy mentoring junior developers, facilitating technical retrospectives, and helping unblock teammates. As I reach Senior and Staff levels, I see myself taking on technical leadership—guiding architecture and engineering standards.\n\nWhether I ultimately choose the Principal Engineer track or an Engineering Manager role will depend on where I can create the greatest leverage for the team, but my technical foundation will always be my core strength.\"",
+            List.of("Clear preference grounded in current technical mastery", "Recognition that leadership exists on both IC and management tracks", "Focus on organizational leverage and team empowerment"),
+            "Shows self-awareness. Companies value strong senior ICs just as much as managers.",
+            List.of("Focus on deep technical mastery on the IC track while embracing mentorship, remaining open to whichever path offers maximum team leverage", "Say you only want to be a manager so you can stop writing code", "Claim management is useless and engineers should have no leaders", "State that you have never thought about your career path"), 0
+        ));
+
+        questionBank.add(new InterviewQuestion(
+            "hr-fiveyears-3", "hr", "five-years", "Medium",
+            "What High-Impact Technical Skills Are on Your 3-Year Roadmap?",
+            "What specific technologies, paradigms, or architectural domains are currently at the top of your learning roadmap?",
+            null,
+            "Strategic Skill Roadmap:\n\n1. Distributed Consensus & Concurrency: \"I am deepening my knowledge of distributed consistency algorithms (Raft, Paxos) and lock-free data structures to master how large-scale databases maintain consistency across regions.\"\n2. Advanced Cloud Observability: \"I want to master OpenTelemetry and distributed tracing to diagnose microsecond latency spikes in complex microservice architectures.\"\n3. Resilient System Design: \"I am studying fault-tolerance design patterns—circuit breakers, bulkheads, and chaos engineering—to build systems that gracefully survive partial cloud outages.\"",
+            List.of("Specific, foundational computer science concepts (consensus, telemetry, resilience)", "Focus on durable architectural skills rather than fleeting hype frameworks", "Direct application to enterprise-scale systems"),
+            "Shows that your learning goals align with building reliable, enterprise-grade distributed systems.",
+            List.of("Target durable architectural domains: distributed consensus, OpenTelemetry observability, and fault-tolerant cloud design", "Say you want to learn every new JavaScript framework released this month", "Claim you already know all technical skills you will ever need", "Say you have no learning roadmap because you prefer to wing it"), 0
+        ));
+
+        questionBank.add(new InterviewQuestion(
+            "hr-fiveyears-4", "hr", "five-years", "Hard",
+            "How Will You Define and Measure Your Own Success Over the Next 3 Years?",
+            "Beyond job titles and promotions, what tangible benchmarks will signify to you that you are succeeding in your role?",
+            null,
+            "Multi-Dimensional Success Benchmarks:\n\n1. System Reliability & Business Impact: \"I measure success by the durability of the systems I build: Did they scale gracefully? Did they achieve 99.99% uptime? Did they reduce operational latency for our users?\"\n2. Engineering Velocity of the Team: \"Success means that teammates can deploy and build on top of my components quickly without confusion or fear of regressions.\"\n3. Mentorship & Multiplier Effect: \"I measure my value not just by how much code I write, but by how much easier I make it for others to succeed—mentoring new hires and authoring clear Architecture Decision Records (ADRs).\"\n4. Professional Autonomy: \"Becoming someone leadership trusts to lead critical technical initiatives with minimal supervision.\"",
+            List.of("Tie personal success directly to system reliability and user metrics", "The 'multiplier effect': making the whole team more productive", "Earning organizational trust and autonomous ownership"),
+            "Highlights that you define success through team enablement and customer impact rather than personal vanity.",
+            List.of("Measure success by system reliability, team velocity multiplication, impactful mentorship, and earned architectural autonomy", "Measure success exclusively by how many lines of code you typed", "Measure success by how few meetings you attended", "Define success as never having anyone question your ideas"), 0
+        ));
+
+        questionBank.add(new InterviewQuestion(
+            "hr-fiveyears-5", "hr", "five-years", "Hard",
+            "If Given Autonomy, What Innovation Would You Spearhead Here?",
+            "If our engineering organization gave you 20% hackathon time, what technical challenge or initiative would you tackle?",
+            null,
+            "Proactive Engineering Initiative:\n\n\"If given 20% innovation time, I would build an **Automated Test Flakiness Detector and Telemetry Dashboard**.\n\n- Problem: Flaky integration tests erode developer trust, slow down CI/CD pipelines, and cause engineers to ignore genuine failures.\n- Solution: I would implement an automated retry-analysis worker that flags non-deterministic tests, captures heap and thread dumps during failures, and alerts the owning team with exact stack traces.\n- Value: This directly protects engineering velocity, cuts CI queue times, and ensures every merged PR is truly rock solid.\"",
+            List.of("Identify a universal engineering pain point (flaky tests, build times)", "Propose a concrete technical solution with measurable business value", "Demonstrate care for developer productivity and engineering happiness"),
+            "Proves you are proactive and care about solving systemic organizational bottlenecks.",
+            List.of("Propose an automated test flakiness analyzer and CI telemetry tool to directly protect team deployment velocity", "Suggest rebuilding the entire company website in a niche obscure language", "Say you would spend the time browsing the web", "Claim that the company has no room for improvement"), 0
+        ));
+
+        // --- 6. Teamwork and Communication Questions (5 Questions) ---
         questionBank.add(new InterviewQuestion(
             "hr-team-1", "hr", "teamwork-communication", "Hard",
             "Handling Team Conflict & Disagreements (STAR Technique)",
@@ -391,6 +611,51 @@ public class InterviewService {
             "Never badmouth coworkers. Show that you prioritize team success and data-driven solutions over being 'right'.",
             List.of("Use the STAR framework demonstrating data-driven resolution, mutual respect, and positive team outcomes", "Explain how you proved your teammate completely wrong in front of management", "Say you always agree with everything to avoid conflict", "Refuse to talk to teammates who disagree with you"), 0
         ));
+
+        questionBank.add(new InterviewQuestion(
+            "hr-team-2", "hr", "teamwork-communication", "Medium",
+            "Collaborating with Difficult Stakeholders or Cross-Functional Leads",
+            "Describe a time you had to work with a designer, product manager, or engineer who had conflicting expectations. How did you find alignment?",
+            null,
+            "STAR Alignment Framework:\n\n- Situation: \"During the redesign of our assessment submission interface, our UI designer wanted rich animation transitions on every code run, while I was concerned that heavy DOM manipulations would introduce noticeable input lag on lower-end devices.\"\n- Task: \"Find a solution that satisfied the designer's desire for modern polish while upholding my commitment to sub-50ms editor responsiveness.\"\n- Action: \"I scheduled a 20-minute working session. Instead of rejecting the design outright, I built a prototype demonstrating both versions. I showed how CSS GPU-accelerated transforms (`transform: translateY` and `opacity`) could deliver sleek visual feedback with zero layout reflows or CPU spikes. We agreed to implement the lightweight GPU transitions.\"\n- Result: \"The feature shipped with rave reviews from users for its snappy responsiveness and polished aesthetics, and the designer and I established a strong collaborative partnership for future sprints.\"",
+            List.of("Focus on shared user goals rather than turf battles", "Demonstrate collaborative prototyping to find win-win solutions", "Technical creativity: using GPU transforms to solve performance trade-offs"),
+            "Shows cross-functional empathy. Great engineers build bridges with design and product teams.",
+            List.of("Build collaborative prototypes, align on shared user experience goals, and find creative win-win technical compromises", "Ignore the designer's mockups and build whatever you want", "Tell the product manager that design doesn't matter for developers", "Escalate to the CEO immediately over minor CSS transitions"), 0
+        ));
+
+        questionBank.add(new InterviewQuestion(
+            "hr-team-3", "hr", "teamwork-communication", "Easy",
+            "Mentoring & Helping a Struggling Colleague",
+            "Tell me about a time you went out of your way to help a classmate or junior teammate who was stuck on a difficult problem.",
+            null,
+            "STAR Mentorship Blueprint:\n\n- Situation: \"A junior teammate was struggling for two days to implement pagination and filtering on a relational database table, repeatedly hitting N+1 query performance warnings in their logs.\"\n- Task: \"Help them resolve the performance bug without simply writing the code for them or making them feel incompetent.\"\n- Action: \"I invited them to a 30-minute pair-programming session. Rather than taking over their keyboard, I asked guiding questions: 'What queries do you see executing in the terminal when you load page 1?' Once they observed the 50 repeated SELECT statements, I explained the difference between eager loading and lazy loading with a simple diagram on a digital whiteboard, and guided them as they refactored the query with a single JOIN.\"\n- Result: \"They solved the issue themselves, cutting database queries from 51 to 1. More importantly, they gained the confidence to handle relational query optimizations independently on future tickets.\"",
+            List.of("Mentorship through guiding questions rather than taking over", "Patience and psychological safety", "Empowering the learner with durable understanding"),
+            "Proves you are a team multiplier who elevates those around you.",
+            List.of("Empower the teammate using Socratic guiding questions and conceptual diagrams so they understand and solve the problem themselves", "Grab their keyboard and write the code for them while laughing", "Tell them to figure it out on their own because everyone is busy", "Report them to management for being slow"), 0
+        ));
+
+        questionBank.add(new InterviewQuestion(
+            "hr-team-4", "hr", "teamwork-communication", "Hard",
+            "Pushing Back Respectfully on Unrealistic Deadlines",
+            "How do you handle a situation where leadership or a client demands an extensive feature in a timeline that would severely compromise code quality or stability?",
+            null,
+            "STAR Constructive Pushback Protocol:\n\n- Situation: \"Two weeks before an end-of-semester exam period, our platform sponsor requested adding automated plagiarism detection across 1,000+ student code repositories in just 7 days.\"\n- Task: \"Building a full AST-based semantic plagiarism engine in 7 days was technically infeasible without skipping security testing and risking false positives that could wrongly penalize students.\"\n- Action: \"Instead of a blunt 'no', I scheduled a meeting with data. I presented three options:\n  1. Option A (MVP): Ship a lightweight tokenized string-matching algorithm for the upcoming exam window, which could be built and tested safely in 5 days.\n  2. Option B (Full Scope): Deliver the deep AST semantic engine on a realistic 4-week timeline for the following quarter.\n  3. I explained the risks of false positives to institutional reputation if we rushed.\"\n- Result: \"The sponsor appreciated the transparent risk analysis and chose Option A. The exam proceeded smoothly with zero false positive disputes, and we delivered Option B on schedule the following month.\"",
+            List.of("Replace emotional pushback with data and risk analysis", "Offer constructive alternative options (MVP vs full scope)", "Protect customer trust and product stability"),
+            "Shows executive poise. Leaders respect engineers who protect the business from reckless shortcuts.",
+            List.of("Present structured data-backed options with trade-offs (MVP vs full scope), clearly explaining business risks to reach an aligned decision", "Blindly agree to the deadline and ship broken, untested code", "Yell at management that they don't understand software engineering", "Pretend to work on the feature and claim your computer crashed on deadline day"), 0
+        ));
+
+        questionBank.add(new InterviewQuestion(
+            "hr-team-5", "hr", "teamwork-communication", "Medium",
+            "Fostering Inclusivity and Psychological Safety on an Engineering Team",
+            "How do you ensure that all teammates—including junior developers and quieter colleagues—feel safe contributing ideas in team meetings?",
+            null,
+            "Fostering Psychological Safety:\n\n1. Active Solicitation of Quiet Voices: \"In design reviews, I deliberately invite input from teammates who haven't spoken yet: 'Alex, you've worked on similar caching layers before, what are your thoughts on this approach?'\"\n2. Destigmatizing Questions: \"I openly ask questions when I don't know something. When senior engineers admit what they don't know, it gives permission to junior teammates to ask questions without fear of judgment.\"\n3. Celebrate Blameless Learnings: \"During sprint retrospectives or post-mortems, I focus exclusively on systems and processes rather than attributing blame to individuals. We ask 'What failed in our testing guardrails?' rather than 'Who wrote this bug?'\"",
+            List.of("Active inclusion of quieter teammates", "Humility and vulnerability in technical discussions", "Blameless culture focused on improving guardrails"),
+            "Essential for senior roles: true leaders build environments where every engineer does their best work.",
+            List.of("Actively invite input from quieter members, openly admit what you don't know to destigmatize learning, and maintain blameless retrospectives", "Dominate every meeting and talk over junior colleagues", "Mock teammates when they ask basic questions", "Insist that only senior engineers are allowed to propose ideas"), 0
+        ));
+
 
         // ==========================================
         // 3. COGNITIVE ASSESSMENT
