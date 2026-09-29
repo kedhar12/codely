@@ -22,6 +22,7 @@ let state = {
   mcqIndex: 0,
   mcqScore: 0,
   mcqLang: 'all',
+  mcqDifficulty: 'all',
   mcqAnswered: false,
   // Auth state
   user: null,
@@ -77,77 +78,137 @@ function updateThemeIcon() {
 
 // ==================== MONACO EDITOR ====================
 function initMonaco() {
-  if (typeof require !== 'undefined' && require.config) {
-    require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' } });
-    require(['vs/editor/editor.main'], function () {
-      isMonacoReady = true;
-
-      // Playground Editor
-      playgroundEditor = monaco.editor.create(document.getElementById('playground-editor'), {
-        value: getLanguageTemplate(state.playgroundLang),
-        language: getMonacoLang(state.playgroundLang),
-        theme: state.theme === 'dark' ? 'vs-dark' : 'vs',
-        fontSize: 14,
-        fontFamily: "'Fira Code', 'Consolas', monospace",
-        automaticLayout: true,
-        minimap: { enabled: false },
-        lineNumbers: 'on',
-        scrollBeyondLastLine: false,
-        padding: { top: 12, bottom: 12 }
-      });
-
-      // Workbench Editor
-      workbenchEditor = monaco.editor.create(document.getElementById('workbench-editor'), {
-        value: "// Select a problem from the catalog...",
-        language: getMonacoLang(state.workbenchLang),
-        theme: state.theme === 'dark' ? 'vs-dark' : 'vs',
-        fontSize: 14,
-        fontFamily: "'Fira Code', 'Consolas', monospace",
-        automaticLayout: true,
-        minimap: { enabled: false },
-        lineNumbers: 'on',
-        scrollBeyondLastLine: false,
-        padding: { top: 12, bottom: 12 }
-      });
-
-      // Shortcut: Ctrl + Enter to run code
-      window.addEventListener('keydown', (e) => {
-        if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
-          const activeView = document.querySelector('.view-section.active');
-          if (activeView && activeView.id === 'view-playground') {
-            document.getElementById('playground-run-btn').click();
-          } else if (activeView && activeView.id === 'view-problems') {
-            document.getElementById('workbench-run-btn').click();
-          }
-        }
-      });
-    }, function () {
+  let monacoWatchdog = setTimeout(() => {
+    if (!isMonacoReady) {
+      console.warn("Monaco Editor CDN load timeout (2.5s). Activating native fallback code editor.");
       fallbackToTextareas();
-    });
+    }
+  }, 2500);
+
+  if (typeof require !== 'undefined' && require.config) {
+    try {
+      require.config({ paths: { vs: 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' } });
+      require(['vs/editor/editor.main'], function () {
+        clearTimeout(monacoWatchdog);
+        isMonacoReady = true;
+
+        // Hide fallback textareas
+        const pgArea = document.getElementById('playground-fallback-code');
+        const wbArea = document.getElementById('workbench-fallback-code');
+        if (pgArea) pgArea.style.display = 'none';
+        if (wbArea) wbArea.style.display = 'none';
+
+        const pgContainer = document.getElementById('playground-editor');
+        const wbContainer = document.getElementById('workbench-editor');
+        if (pgContainer) pgContainer.style.display = 'block';
+        if (wbContainer) wbContainer.style.display = 'block';
+
+        // Playground Editor
+        playgroundEditor = monaco.editor.create(pgContainer, {
+          value: getLanguageTemplate(state.playgroundLang),
+          language: getMonacoLang(state.playgroundLang),
+          theme: state.theme === 'dark' ? 'vs-dark' : 'vs',
+          fontSize: 14,
+          fontFamily: "'Fira Code', 'Cascadia Code', 'Consolas', monospace",
+          automaticLayout: true,
+          minimap: { enabled: false },
+          lineNumbers: 'on',
+          scrollBeyondLastLine: false,
+          padding: { top: 12, bottom: 12 }
+        });
+
+        // Workbench Editor
+        workbenchEditor = monaco.editor.create(wbContainer, {
+          value: "// Select a problem from the catalog...",
+          language: getMonacoLang(state.workbenchLang),
+          theme: state.theme === 'dark' ? 'vs-dark' : 'vs',
+          fontSize: 14,
+          fontFamily: "'Fira Code', 'Cascadia Code', 'Consolas', monospace",
+          automaticLayout: true,
+          minimap: { enabled: false },
+          lineNumbers: 'on',
+          scrollBeyondLastLine: false,
+          padding: { top: 12, bottom: 12 }
+        });
+
+        // Sync values to textareas on change
+        playgroundEditor.onDidChangeModelContent(() => {
+          if (pgArea) pgArea.value = playgroundEditor.getValue();
+        });
+        workbenchEditor.onDidChangeModelContent(() => {
+          if (wbArea) wbArea.value = workbenchEditor.getValue();
+        });
+
+        // Shortcut: Ctrl + Enter to run code
+        window.addEventListener('keydown', (e) => {
+          if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            const activeView = document.querySelector('.view-section.active');
+            if (activeView && activeView.id === 'view-playground') {
+              document.getElementById('playground-run-btn').click();
+            } else if (activeView && activeView.id === 'view-problems') {
+              document.getElementById('workbench-run-btn').click();
+            }
+          }
+        });
+      }, function (err) {
+        clearTimeout(monacoWatchdog);
+        console.warn("Failed to load Monaco from CDN:", err);
+        fallbackToTextareas();
+      });
+    } catch (e) {
+      clearTimeout(monacoWatchdog);
+      fallbackToTextareas();
+    }
   } else {
+    clearTimeout(monacoWatchdog);
     fallbackToTextareas();
   }
 }
 
+function setupTextareaEditor(textarea) {
+  if (!textarea || textarea.dataset.tabListenerAttached === 'true') return;
+  textarea.dataset.tabListenerAttached = 'true';
+
+  // Support Tab key for indentation
+  textarea.addEventListener('keydown', (e) => {
+    if (e.key === 'Tab') {
+      e.preventDefault();
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const val = textarea.value;
+      textarea.value = val.substring(0, start) + '    ' + val.substring(end);
+      textarea.selectionStart = textarea.selectionEnd = start + 4;
+    }
+  });
+}
+
 function fallbackToTextareas() {
   isMonacoReady = false;
-  document.getElementById('playground-editor').style.display = 'none';
-  document.getElementById('workbench-editor').style.display = 'none';
+  const pgContainer = document.getElementById('playground-editor');
+  const wbContainer = document.getElementById('workbench-editor');
+  if (pgContainer) pgContainer.style.display = 'none';
+  if (wbContainer) wbContainer.style.display = 'none';
+
   const pgArea = document.getElementById('playground-fallback-code');
   const wbArea = document.getElementById('workbench-fallback-code');
-  pgArea.style.display = 'block';
-  wbArea.style.display = 'block';
-  pgArea.value = getLanguageTemplate(state.playgroundLang);
+  if (pgArea) {
+    pgArea.style.display = 'block';
+    setupTextareaEditor(pgArea);
+    if (!pgArea.value) pgArea.value = getLanguageTemplate(state.playgroundLang);
+  }
+  if (wbArea) {
+    wbArea.style.display = 'block';
+    setupTextareaEditor(wbArea);
+  }
 }
 
 function getEditorCode(isWorkbench = false) {
   if (isMonacoReady && window.monaco) {
     const editor = isWorkbench ? workbenchEditor : playgroundEditor;
-    return editor ? editor.getValue() : '';
-  } else {
-    const textarea = isWorkbench ? document.getElementById('workbench-fallback-code') : document.getElementById('playground-fallback-code');
-    return textarea ? textarea.value : '';
+    if (editor) return editor.getValue();
   }
+  const textarea = isWorkbench ? document.getElementById('workbench-fallback-code') : document.getElementById('playground-fallback-code');
+  return textarea ? textarea.value : '';
 }
 
 function setEditorCode(code, lang, isWorkbench = false) {
@@ -157,9 +218,12 @@ function setEditorCode(code, lang, isWorkbench = false) {
       editor.setValue(code || '');
       monaco.editor.setModelLanguage(editor.getModel(), getMonacoLang(lang));
     }
-  } else {
-    const textarea = isWorkbench ? document.getElementById('workbench-fallback-code') : document.getElementById('playground-fallback-code');
-    if (textarea) textarea.value = code || '';
+  }
+  // Keep fallback textarea synchronized at all times
+  const textarea = isWorkbench ? document.getElementById('workbench-fallback-code') : document.getElementById('playground-fallback-code');
+  if (textarea) {
+    textarea.value = code || '';
+    setupTextareaEditor(textarea);
   }
 }
 
@@ -441,9 +505,21 @@ function openProblem(problemId) {
     </div>
   `;
 
-  // Monaco layout resize
+  // Editor layout and focus handling
   if (isMonacoReady && workbenchEditor) {
-    setTimeout(() => workbenchEditor.layout(), 50);
+    setTimeout(() => {
+      workbenchEditor.layout();
+      workbenchEditor.focus();
+    }, 50);
+    setTimeout(() => {
+      workbenchEditor.layout();
+    }, 200);
+  } else {
+    const wbArea = document.getElementById('workbench-fallback-code');
+    if (wbArea) {
+      setupTextareaEditor(wbArea);
+      setTimeout(() => wbArea.focus(), 50);
+    }
   }
 }
 
@@ -635,7 +711,20 @@ function setupMcqEvents() {
         pillsContainer.querySelectorAll('.lang-pill-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         state.mcqLang = btn.getAttribute('data-lang');
-        loadMcqQuestions(state.mcqLang);
+        loadMcqQuestions(state.mcqLang, state.mcqDifficulty);
+      });
+    });
+  }
+
+  // Difficulty pills
+  const diffPillsContainer = document.getElementById('mcq-diff-pills');
+  if (diffPillsContainer) {
+    diffPillsContainer.querySelectorAll('.diff-pill-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        diffPillsContainer.querySelectorAll('.diff-pill-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.mcqDifficulty = btn.getAttribute('data-diff');
+        loadMcqQuestions(state.mcqLang, state.mcqDifficulty);
       });
     });
   }
@@ -644,7 +733,7 @@ function setupMcqEvents() {
   const refreshBtn = document.getElementById('mcq-refresh-btn');
   if (refreshBtn) {
     refreshBtn.addEventListener('click', () => {
-      loadMcqQuestions(state.mcqLang);
+      loadMcqQuestions(state.mcqLang, state.mcqDifficulty);
     });
   }
 
@@ -665,7 +754,7 @@ function setupMcqEvents() {
   const restartBtn = document.getElementById('mcq-restart-btn');
   if (restartBtn) {
     restartBtn.addEventListener('click', () => {
-      loadMcqQuestions(state.mcqLang);
+      loadMcqQuestions(state.mcqLang, state.mcqDifficulty);
     });
   }
 
@@ -678,27 +767,44 @@ function setupMcqEvents() {
   }
 
   // Initial load
-  loadMcqQuestions('all');
+  loadMcqQuestions('all', 'all');
 }
 
-async function loadMcqQuestions(lang = 'all') {
+async function loadMcqQuestions(lang = state.mcqLang, difficulty = state.mcqDifficulty) {
+  state.mcqLang = lang || 'all';
+  state.mcqDifficulty = difficulty || 'all';
+
   const card = document.getElementById('mcq-card');
   const summaryCard = document.getElementById('mcq-summary-card');
   if (card) card.style.display = 'block';
   if (summaryCard) summaryCard.style.display = 'none';
 
   const qText = document.getElementById('mcq-question-text');
-  if (qText) qText.textContent = 'Fetching dynamic questions from API...';
+  if (qText) qText.textContent = `Fetching dynamic ${state.mcqDifficulty !== 'all' ? state.mcqDifficulty : ''} questions from API...`;
+
+  const codeBox = document.getElementById('mcq-code-snippet');
+  if (codeBox) codeBox.style.display = 'none';
+  const optionsContainer = document.getElementById('mcq-options-container');
+  if (optionsContainer) optionsContainer.innerHTML = '';
+  const explanationBox = document.getElementById('mcq-explanation');
+  if (explanationBox) explanationBox.style.display = 'none';
+  const nextBtn = document.getElementById('mcq-next-btn');
+  if (nextBtn) nextBtn.style.display = 'none';
 
   state.mcqIndex = 0;
   state.mcqScore = 0;
   state.mcqAnswered = false;
 
   try {
-    const res = await fetch(`/api/mcq?language=${encodeURIComponent(lang)}&count=5`);
+    const url = `/api/mcq?language=${encodeURIComponent(state.mcqLang)}&difficulty=${encodeURIComponent(state.mcqDifficulty)}&count=5`;
+    const res = await fetch(url);
     if (res.ok) {
       state.mcqQuestions = await res.json();
-      renderMcqQuestion();
+      if (!state.mcqQuestions || state.mcqQuestions.length === 0) {
+        if (qText) qText.textContent = `No ${state.mcqDifficulty} questions available right now for this selection. Try switching difficulty or selecting "All Languages".`;
+      } else {
+        renderMcqQuestion();
+      }
     } else {
       if (qText) qText.textContent = 'Failed to load questions. Please try again.';
     }

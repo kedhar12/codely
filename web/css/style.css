@@ -541,25 +541,41 @@ body {
   background: #1e1e1e;
 }
 
-#monaco-editor, #playground-editor {
+#monaco-editor,
+#playground-editor,
+#workbench-editor,
+#playground-fallback-code,
+#workbench-fallback-code {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
+  box-sizing: border-box;
 }
 
 /* Fallback textarea if monaco loading fails or pending */
 .editor-textarea {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   background: #181c24;
   color: #f8fafc;
-  font-family: var(--font-mono);
+  font-family: 'Fira Code', 'Cascadia Code', 'Consolas', monospace;
   font-size: 14px;
-  line-height: 1.5;
-  padding: 1rem;
+  line-height: 1.6;
+  padding: 1rem 1.25rem;
   border: none;
   outline: none;
   resize: none;
   white-space: pre;
+  tab-size: 4;
+  -moz-tab-size: 4;
+  caret-color: var(--accent-cyan);
+  box-sizing: border-box;
+  overflow: auto;
 }
 
 /* Bottom Console / Test Results Drawer */
@@ -1162,6 +1178,51 @@ body {
   background: rgba(6, 182, 212, 0.15);
   border-color: var(--accent-cyan);
   color: var(--accent-cyan);
+}
+
+.diff-pill-btn {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 0.3rem 0.8rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.diff-pill-btn:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-cyan);
+}
+
+.diff-pill-btn.active {
+  background: rgba(6, 182, 212, 0.15);
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+}
+
+.diff-pill-btn[data-diff="Hard"].active {
+  background: rgba(244, 63, 94, 0.15);
+  border-color: var(--accent-rose);
+  color: var(--accent-rose);
+}
+
+.diff-pill-btn[data-diff="Easy"].active {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: var(--accent-green);
+  color: var(--accent-green);
+}
+
+.diff-pill-btn[data-diff="Medium"].active {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: var(--accent-amber);
+  color: var(--accent-amber);
 }
 
 .mcq-progress-bar-wrap {

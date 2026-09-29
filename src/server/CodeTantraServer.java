@@ -53,13 +53,26 @@ public class CodeTantraServer {
         System.out.println("⚡ Java Runtime: " + System.getProperty("java.version") + " (Virtual Threads Enabled)");
         System.out.println("💻 Web UI Root: " + WEB_ROOT);
         System.out.println("==================================================================");
+
+        try {
+            Thread.currentThread().join();
+        } catch (InterruptedException ignored) {}
     }
 
     private static void sendCorsAndHeaders(HttpExchange exchange, int statusCode, String contentType, byte[] data) throws IOException {
         exchange.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
-        exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+        exchange.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, HEAD");
         exchange.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type, Authorization");
         exchange.getResponseHeaders().set("Content-Type", contentType);
+
+        if ("HEAD".equalsIgnoreCase(exchange.getRequestMethod())) {
+            exchange.sendResponseHeaders(statusCode, -1);
+            try (OutputStream os = exchange.getResponseBody()) {
+                // close empty body
+            }
+            return;
+        }
+
         exchange.sendResponseHeaders(statusCode, data.length);
         try (OutputStream os = exchange.getResponseBody()) {
             os.write(data);
@@ -340,6 +353,7 @@ public class CodeTantraServer {
 
             String query = exchange.getRequestURI().getQuery();
             String lang = "all";
+            String difficulty = "all";
             int count = 5;
 
             if (query != null) {
@@ -348,6 +362,8 @@ public class CodeTantraServer {
                     if (pair.length == 2) {
                         if ("language".equalsIgnoreCase(pair[0])) {
                             lang = pair[1];
+                        } else if ("difficulty".equalsIgnoreCase(pair[0])) {
+                            difficulty = pair[1];
                         } else if ("count".equalsIgnoreCase(pair[0])) {
                             try { count = Integer.parseInt(pair[1]); } catch (NumberFormatException ignored) {}
                         }
@@ -355,7 +371,7 @@ public class CodeTantraServer {
                 }
             }
 
-            List<McqQuestion> questions = McqService.getDynamicQuestions(lang, count);
+            List<McqQuestion> questions = McqService.getDynamicQuestions(lang, difficulty, count);
             sendJson(exchange, 200, questions);
         }
     }

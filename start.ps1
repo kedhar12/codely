@@ -5,10 +5,14 @@ Write-Host "================================================================" -F
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 Set-Location $scriptDir
 
-# Add GCC to Path if present
+# Add GCC and JDK to Path if present
 $w64Path = "$scriptDir\..\w64devkit\bin"
 if (Test-Path $w64Path) {
     $env:PATH = "$w64Path;$env:PATH"
+}
+$jdkPath = "C:\Users\user\.vscode\extensions\redhat.java-1.56.0-win32-x64\jre\21.0.12.1-win32-x86_64\bin"
+if (Test-Path $jdkPath) {
+    $env:PATH = "$jdkPath;$env:PATH"
 }
 
 if (!(Test-Path "bin")) { New-Item -ItemType Directory -Name "bin" | Out-Null }

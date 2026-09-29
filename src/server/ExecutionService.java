@@ -13,6 +13,8 @@ public class ExecutionService {
     private static final long DEFAULT_TIMEOUT_SECONDS = 6;
 
     // Cache binary paths
+    private static String javacPath = "javac";
+    private static String javaPath = "java";
     private static String gccPath = null;
     private static String gppPath = null;
     private static String pythonPath = null;
@@ -20,6 +22,19 @@ public class ExecutionService {
     private static String localW64Bin = null;
 
     static {
+        // Look for JDK in known local extensions/directories
+        String[] jdkCandidates = new String[] {
+            "C:\\Users\\user\\.vscode\\extensions\\redhat.java-1.56.0-win32-x64\\jre\\21.0.12.1-win32-x86_64\\bin",
+            "C:\\Users\\user\\.vscode\\extensions\\redhat.java-1.55.0-win32-x64\\jre\\21.0.11-win32-x86_64\\bin"
+        };
+        for (String cand : jdkCandidates) {
+            if (new File(cand, "javac.exe").exists()) {
+                javacPath = new File(cand, "javac.exe").getAbsolutePath();
+                javaPath = new File(cand, "java.exe").getAbsolutePath();
+                break;
+            }
+        }
+
         // Look for GCC and G++ in known local directories first
         String localW64 = "C:\\Users\\user\\.gemini\\antigravity\\scratch\\w64devkit\\bin";
         if (new File(localW64, "gcc.exe").exists()) {
@@ -93,7 +108,7 @@ public class ExecutionService {
         Files.writeString(srcFile.toPath(), code, StandardCharsets.UTF_8);
 
         // Compile
-        ProcessBuilder compilePb = new ProcessBuilder("javac", "-encoding", "UTF-8", srcFile.getName());
+        ProcessBuilder compilePb = new ProcessBuilder(javacPath, "-encoding", "UTF-8", srcFile.getName());
         compilePb.directory(dir);
         long compileStart = System.currentTimeMillis();
         ExecutionResult compileRes = executeProcess(compilePb, "", 10);
@@ -103,7 +118,7 @@ public class ExecutionService {
         }
 
         // Run
-        ProcessBuilder runPb = new ProcessBuilder("java", "-Dfile.encoding=UTF-8", className);
+        ProcessBuilder runPb = new ProcessBuilder(javaPath, "-Dfile.encoding=UTF-8", className);
         runPb.directory(dir);
         return executeProcess(runPb, stdin, DEFAULT_TIMEOUT_SECONDS);
     }
