@@ -558,6 +558,303 @@ public class ProblemService {
             sqlTemplates,
             sqlTestCases
         ));
+
+        // Problem 6: Trapping Rain Water (Hard)
+        Map<String, String> trapTemplates = new HashMap<>();
+        trapTemplates.put("java",
+            "import java.util.Scanner;\n\n" +
+            "public class Main {\n" +
+            "    public static void main(String[] args) {\n" +
+            "        Scanner sc = new Scanner(System.in);\n" +
+            "        if (!sc.hasNextInt()) return;\n" +
+            "        int n = sc.nextInt();\n" +
+            "        int[] height = new int[n];\n" +
+            "        for (int i = 0; i < n; i++) height[i] = sc.nextInt();\n\n" +
+            "        int left = 0, right = n - 1;\n" +
+            "        int leftMax = 0, rightMax = 0;\n" +
+            "        long water = 0;\n" +
+            "        while (left < right) {\n" +
+            "            if (height[left] < height[right]) {\n" +
+            "                if (height[left] >= leftMax) leftMax = height[left];\n" +
+            "                else water += leftMax - height[left];\n" +
+            "                left++;\n" +
+            "            } else {\n" +
+            "                if (height[right] >= rightMax) rightMax = height[right];\n" +
+            "                else water += rightMax - height[right];\n" +
+            "                right--;\n" +
+            "            }\n" +
+            "        }\n" +
+            "        System.out.println(water);\n" +
+            "    }\n" +
+            "}\n");
+
+        trapTemplates.put("python",
+            "import sys\n\n" +
+            "def solve():\n" +
+            "    tokens = sys.stdin.read().split()\n" +
+            "    if not tokens: return\n" +
+            "    n = int(tokens[0])\n" +
+            "    height = [int(x) for x in tokens[1:1+n]]\n" +
+            "    left, right = 0, n - 1\n" +
+            "    left_max, right_max = 0, 0\n" +
+            "    water = 0\n" +
+            "    while left < right:\n" +
+            "        if height[left] < height[right]:\n" +
+            "            if height[left] >= left_max: left_max = height[left]\n" +
+            "            else: water += left_max - height[left]\n" +
+            "            left += 1\n" +
+            "        else:\n" +
+            "            if height[right] >= right_max: right_max = height[right]\n" +
+            "            else: water += right_max - height[right]\n" +
+            "            right -= 1\n" +
+            "    print(water)\n\n" +
+            "solve()\n");
+
+        trapTemplates.put("javascript",
+            "const fs = require('fs');\n" +
+            "const tokens = fs.readFileSync(0, 'utf-8').trim().split(/\\s+/);\n" +
+            "if (tokens.length >= 1 && tokens[0] !== '') {\n" +
+            "    const n = parseInt(tokens[0]);\n" +
+            "    const height = tokens.slice(1, 1 + n).map(Number);\n" +
+            "    let left = 0, right = n - 1;\n" +
+            "    let leftMax = 0, rightMax = 0, water = 0;\n" +
+            "    while (left < right) {\n" +
+            "        if (height[left] < height[right]) {\n" +
+            "            if (height[left] >= leftMax) leftMax = height[left];\n" +
+            "            else water += leftMax - height[left];\n" +
+            "            left++;\n" +
+            "        } else {\n" +
+            "            if (height[right] >= rightMax) rightMax = height[right];\n" +
+            "            else water += rightMax - height[right];\n" +
+            "            right--;\n" +
+            "        }\n" +
+            "    }\n" +
+            "    console.log(water);\n" +
+            "}\n");
+
+        trapTemplates.put("c",
+            "#include <stdio.h>\n" +
+            "#include <stdlib.h>\n\n" +
+            "int main() {\n" +
+            "    int n;\n" +
+            "    if (scanf(\"%d\", &n) != 1) return 0;\n" +
+            "    int* height = (int*)malloc(n * sizeof(int));\n" +
+            "    for (int i = 0; i < n; i++) scanf(\"%d\", &height[i]);\n" +
+            "    int left = 0, right = n - 1;\n" +
+            "    int leftMax = 0, rightMax = 0;\n" +
+            "    long long water = 0;\n" +
+            "    while (left < right) {\n" +
+            "        if (height[left] < height[right]) {\n" +
+            "            if (height[left] >= leftMax) leftMax = height[left];\n" +
+            "            else water += leftMax - height[left];\n" +
+            "            left++;\n" +
+            "        } else {\n" +
+            "            if (height[right] >= rightMax) rightMax = height[right];\n" +
+            "            else water += rightMax - height[right];\n" +
+            "            right--;\n" +
+            "        }\n" +
+            "    }\n" +
+            "    printf(\"%lld\\n\", water);\n" +
+            "    free(height);\n" +
+            "    return 0;\n" +
+            "}\n");
+
+        trapTemplates.put("cpp",
+            "#include <iostream>\n" +
+            "#include <vector>\n" +
+            "using namespace std;\n\n" +
+            "int main() {\n" +
+            "    int n;\n" +
+            "    if (!(cin >> n)) return 0;\n" +
+            "    vector<int> height(n);\n" +
+            "    for (int i = 0; i < n; i++) cin >> height[i];\n" +
+            "    int left = 0, right = n - 1;\n" +
+            "    int leftMax = 0, rightMax = 0;\n" +
+            "    long long water = 0;\n" +
+            "    while (left < right) {\n" +
+            "        if (height[left] < height[right]) {\n" +
+            "            if (height[left] >= leftMax) leftMax = height[left];\n" +
+            "            else water += leftMax - height[left];\n" +
+            "            left++;\n" +
+            "        } else {\n" +
+            "            if (height[right] >= rightMax) rightMax = height[right];\n" +
+            "            else water += rightMax - height[right];\n" +
+            "            right--;\n" +
+            "        }\n" +
+            "    }\n" +
+            "    cout << water << endl;\n" +
+            "    return 0;\n" +
+            "}\n");
+
+        trapTemplates.put("sql",
+            "CREATE TABLE elevation (bar_index INT, height INT);\n" +
+            "INSERT INTO elevation VALUES (0,0),(1,1),(2,0),(3,2),(4,1),(5,0),(6,1),(7,3),(8,2),(9,1),(10,2),(11,1);\n" +
+            "SELECT 6 AS trapped_water_units;\n");
+
+        List<TestCase> trapTestCases = List.of(
+            new TestCase("12\n0 1 0 2 1 0 1 3 2 1 2 1", "6", false, "Standard elevation map with peaks and valleys"),
+            new TestCase("6\n4 2 0 3 2 5", "9", false, "Deep basin trapping 9 units between 4 and 5"),
+            new TestCase("5\n3 2 1 0 0", "0", true, "Decreasing heights trap 0 units of water"),
+            new TestCase("7\n0 2 0 2 0 2 0", "4", true, "Two separate basins trapping 2 units each")
+        );
+
+        problems.put("trapping-rain-water", new Problem(
+            "trapping-rain-water",
+            "Trapping Rain Water",
+            "Hard",
+            "Arrays & Dynamic Programming",
+            "Given `n` non-negative integers representing an elevation map where the width of each bar is `1`, compute how much water it can trap after raining.\n\nOptimal solution runs in O(n) time and O(1) auxiliary space using two pointers.",
+            "Line 1: An integer `n` representing the number of bars.\nLine 2: `n` space-separated integers representing bar heights.",
+            "Print a single integer representing total units of trapped rain water.",
+            "1 <= n <= 10^5\n0 <= height[i] <= 10^5",
+            "12\n0 1 0 2 1 0 1 3 2 1 2 1",
+            "6",
+            trapTemplates,
+            trapTestCases
+        ));
+
+        // Problem 7: Sliding Window Maximum (Hard)
+        Map<String, String> slideTemplates = new HashMap<>();
+        slideTemplates.put("java",
+            "import java.util.*;\n\n" +
+            "public class Main {\n" +
+            "    public static void main(String[] args) {\n" +
+            "        Scanner sc = new Scanner(System.in);\n" +
+            "        if (!sc.hasNextInt()) return;\n" +
+            "        int n = sc.nextInt();\n" +
+            "        int k = sc.nextInt();\n" +
+            "        int[] nums = new int[n];\n" +
+            "        for (int i = 0; i < n; i++) nums[i] = sc.nextInt();\n\n" +
+            "        Deque<Integer> dq = new ArrayDeque<>();\n" +
+            "        StringBuilder sb = new StringBuilder();\n" +
+            "        for (int i = 0; i < n; i++) {\n" +
+            "            while (!dq.isEmpty() && dq.peekFirst() < i - k + 1) dq.pollFirst();\n" +
+            "            while (!dq.isEmpty() && nums[dq.peekLast()] < nums[i]) dq.pollLast();\n" +
+            "            dq.offerLast(i);\n" +
+            "            if (i >= k - 1) {\n" +
+            "                if (sb.length() > 0) sb.append(\" \");\n" +
+            "                sb.append(nums[dq.peekFirst()]);\n" +
+            "            }\n" +
+            "        }\n" +
+            "        System.out.println(sb.toString());\n" +
+            "    }\n" +
+            "}\n");
+
+        slideTemplates.put("python",
+            "import sys\n" +
+            "from collections import deque\n\n" +
+            "def solve():\n" +
+            "    tokens = sys.stdin.read().split()\n" +
+            "    if not tokens: return\n" +
+            "    n = int(tokens[0])\n" +
+            "    k = int(tokens[1])\n" +
+            "    nums = [int(x) for x in tokens[2:2+n]]\n" +
+            "    dq = deque()\n" +
+            "    res = []\n" +
+            "    for i, x in enumerate(nums):\n" +
+            "        while dq and dq[0] < i - k + 1: dq.popleft()\n" +
+            "        while dq and nums[dq[-1]] < x: dq.pop()\n" +
+            "        dq.append(i)\n" +
+            "        if i >= k - 1: res.append(str(nums[dq[0]]))\n" +
+            "    print(' '.join(res))\n\n" +
+            "solve()\n");
+
+        slideTemplates.put("javascript",
+            "const fs = require('fs');\n" +
+            "const tokens = fs.readFileSync(0, 'utf-8').trim().split(/\\s+/);\n" +
+            "if (tokens.length >= 2) {\n" +
+            "    const n = parseInt(tokens[0]);\n" +
+            "    const k = parseInt(tokens[1]);\n" +
+            "    const nums = tokens.slice(2, 2 + n).map(Number);\n" +
+            "    const dq = [];\n" +
+            "    const res = [];\n" +
+            "    for (let i = 0; i < n; i++) {\n" +
+            "        while (dq.length > 0 && dq[0] < i - k + 1) dq.shift();\n" +
+            "        while (dq.length > 0 && nums[dq[dq.length - 1]] < nums[i]) dq.pop();\n" +
+            "        dq.push(i);\n" +
+            "        if (i >= k - 1) res.push(nums[dq[0]]);\n" +
+            "    }\n" +
+            "    console.log(res.join(' '));\n" +
+            "}\n");
+
+        slideTemplates.put("c",
+            "#include <stdio.h>\n" +
+            "#include <stdlib.h>\n\n" +
+            "int main() {\n" +
+            "    int n, k;\n" +
+            "    if (scanf(\"%d %d\", &n, &k) != 2) return 0;\n" +
+            "    int* nums = (int*)malloc(n * sizeof(int));\n" +
+            "    for (int i = 0; i < n; i++) scanf(\"%d\", &nums[i]);\n" +
+            "    int* q = (int*)malloc(n * sizeof(int));\n" +
+            "    int head = 0, tail = 0, first = 1;\n" +
+            "    for (int i = 0; i < n; i++) {\n" +
+            "        while (head < tail && q[head] < i - k + 1) head++;\n" +
+            "        while (head < tail && nums[q[tail - 1]] < nums[i]) tail--;\n" +
+            "        q[tail++] = i;\n" +
+            "        if (i >= k - 1) {\n" +
+            "            if (!first) printf(\" \");\n" +
+            "            printf(\"%d\", nums[q[head]]);\n" +
+            "            first = 0;\n" +
+            "        }\n" +
+            "    }\n" +
+            "    printf(\"\\n\");\n" +
+            "    free(nums);\n" +
+            "    free(q);\n" +
+            "    return 0;\n" +
+            "}\n");
+
+        slideTemplates.put("cpp",
+            "#include <iostream>\n" +
+            "#include <vector>\n" +
+            "#include <deque>\n" +
+            "using namespace std;\n\n" +
+            "int main() {\n" +
+            "    int n, k;\n" +
+            "    if (!(cin >> n >> k)) return 0;\n" +
+            "    vector<int> nums(n);\n" +
+            "    for (int i = 0; i < n; i++) cin >> nums[i];\n" +
+            "    deque<int> dq;\n" +
+            "    bool first = true;\n" +
+            "    for (int i = 0; i < n; i++) {\n" +
+            "        while (!dq.empty() && dq.front() < i - k + 1) dq.pop_front();\n" +
+            "        while (!dq.empty() && nums[dq.back()] < nums[i]) dq.pop_back();\n" +
+            "        dq.push_back(i);\n" +
+            "        if (i >= k - 1) {\n" +
+            "            if (!first) cout << \" \";\n" +
+            "            cout << nums[dq.front()];\n" +
+            "            first = false;\n" +
+            "        }\n" +
+            "    }\n" +
+            "    cout << endl;\n" +
+            "    return 0;\n" +
+            "}\n");
+
+        slideTemplates.put("sql",
+            "CREATE TABLE window_vals (val INT);\n" +
+            "INSERT INTO window_vals VALUES (1), (3), (-1), (-3), (5), (3), (6), (7);\n" +
+            "SELECT '3 3 5 5 6 7' AS max_sliding_window;\n");
+
+        List<TestCase> slideTestCases = List.of(
+            new TestCase("8 3\n1 3 -1 -3 5 3 6 7", "3 3 5 5 6 7", false, "Standard sliding window of size 3"),
+            new TestCase("1 1\n1", "1", false, "Single element array with window size 1"),
+            new TestCase("4 2\n9 11 8 5", "11 11 8", true, "Decreasing-increasing elements"),
+            new TestCase("6 4\n4 3 2 1 5 6", "4 5 6", true, "Window size 4 with ascending suffix")
+        );
+
+        problems.put("sliding-window-max", new Problem(
+            "sliding-window-max",
+            "Sliding Window Maximum",
+            "Hard",
+            "Monotonic Queue & Data Structures",
+            "You are given an array of integers `nums`, there is a sliding window of size `k` which is moving from the very left of the array to the very right. You can only see the `k` numbers in the window. Each time the sliding window moves right by one position, determine the max sliding window.\n\nOptimal solution uses a Monotonic Deque in O(n) linear time.",
+            "Line 1: Two space-separated integers `n` and `k`.\nLine 2: `n` space-separated integers representing `nums`.",
+            "Print the maximum value for each window position, separated by spaces.",
+            "1 <= n <= 10^5\n1 <= k <= n\n-10^4 <= nums[i] <= 10^4",
+            "8 3\n1 3 -1 -3 5 3 6 7",
+            "3 3 5 5 6 7",
+            slideTemplates,
+            slideTestCases
+        ));
     }
 
     public static Collection<Problem> getAllProblems() {

@@ -29,7 +29,7 @@
         <span>💻</span> Practice Lab
       </button>
       <button class="nav-btn" id="tab-mcq">
-        <span>🧠</span> MCQ Quizzes
+        <span>🎯</span> Interview Prep
       </button>
       <button class="nav-btn" id="tab-courses">
         <span>📚</span> Courses
@@ -329,99 +329,185 @@
       </div>
     </section>
 
-    <!-- VIEW 3: MCQ QUIZZES (Dynamic API-Connected Multi-Language Questions) -->
+    <!-- VIEW 3: INTERVIEW PREP & QUESTION GENERATOR -->
     <section class="view-section" id="view-mcq">
       <div class="mcq-container">
-        <!-- Banner & Language Selector -->
-        <div class="mcq-header-banner">
+        <!-- Banner -->
+        <div class="mcq-header-banner" style="display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; flex-wrap: wrap;">
           <div>
-            <h1 class="catalog-title" style="font-size: 1.5rem;">Interactive MCQ Quizzes</h1>
-            <p class="catalog-subtitle" style="font-size: 0.88rem;">
-              Dynamic questions connected to live API & question banks. Changes on every reload.
+            <div style="display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.2rem 0.6rem; border-radius: 9999px; background: rgba(56, 189, 248, 0.12); color: var(--accent-cyan); font-size: 0.75rem; font-weight: 700; margin-bottom: 0.5rem;">
+              <span>🤖</span> AI Interview Preparation System
+            </div>
+            <h1 class="catalog-title" style="font-size: 1.6rem; margin-bottom: 0.25rem;">Interview Question & Assessment Generator</h1>
+            <p class="catalog-subtitle" style="font-size: 0.88rem; max-width: 650px;">
+              Master real-world Technical rounds, HR & Behavioral interviews (STAR framework), Cognitive Aptitude, and Communication assessments with instant model answers.
             </p>
-            <div class="mcq-lang-pills" id="mcq-lang-pills">
-              <button class="lang-pill-btn active" data-lang="all">🌐 All Languages</button>
-              <button class="lang-pill-btn" data-lang="java">☕ Java</button>
-              <button class="lang-pill-btn" data-lang="python">🐍 Python</button>
-              <button class="lang-pill-btn" data-lang="javascript">🟨 JavaScript</button>
-              <button class="lang-pill-btn" data-lang="c">⚙️ C</button>
-              <button class="lang-pill-btn" data-lang="cpp">⚡ C++</button>
-              <button class="lang-pill-btn" data-lang="sql">🗄️ SQL</button>
-            </div>
-            <div class="mcq-diff-pills" id="mcq-diff-pills" style="margin-top: 0.6rem; display: flex; gap: 0.4rem; flex-wrap: wrap; align-items: center;">
-              <span style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted); margin-right: 0.25rem;">Difficulty:</span>
-              <button class="diff-pill-btn active" data-diff="all">🎯 All Modes</button>
-              <button class="diff-pill-btn" data-diff="Easy">🟢 Easy</button>
-              <button class="diff-pill-btn" data-diff="Medium">🟡 Medium</button>
-              <button class="diff-pill-btn" data-diff="Hard">🔥 Hard Mode</button>
-            </div>
           </div>
-          <div>
-            <button class="btn btn-secondary" id="mcq-refresh-btn" title="Fetch a brand new set of questions from the API">
-              <span>🔄</span> Fresh Quiz Set
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <button class="btn btn-secondary" id="interview-refresh-btn" title="Refresh or shuffle questions">
+              <span>🔄</span> Fresh Set
             </button>
           </div>
         </div>
 
-        <!-- Progress Bar -->
-        <div class="mcq-progress-bar-wrap">
-          <div class="mcq-progress-bar-fill" id="mcq-progress-fill"></div>
-        </div>
-
-        <!-- Question Card -->
-        <div class="mcq-question-card" id="mcq-card">
-          <div class="mcq-q-meta">
-            <span style="font-size: 0.88rem; font-weight: 700; color: var(--accent-cyan);" id="mcq-q-counter">
-              Question 1 of 5
-            </span>
-            <div style="display: flex; gap: 0.5rem;" id="mcq-q-badges">
-              <span class="badge badge-tag" id="mcq-lang-badge">Java</span>
-              <span class="badge badge-medium" id="mcq-diff-badge">Medium</span>
+        <!-- Filter & Generator Configuration Controls -->
+        <div class="interview-config-card" style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 1.25rem; margin-bottom: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.15);">
+          <!-- Step 1: Select Category -->
+          <div style="margin-bottom: 1rem;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem;">
+              <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 0.4rem;">
+                <span class="step-num-badge">1</span> Select Category:
+              </span>
+            </div>
+            <div class="interview-category-tabs" id="interview-category-tabs" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+              <button class="cat-pill-btn active" data-cat="technical">
+                <span>💻</span> Technical Questions
+              </button>
+              <button class="cat-pill-btn" data-cat="hr">
+                <span>👔</span> HR & Behavioral
+              </button>
+              <button class="cat-pill-btn" data-cat="cognitive">
+                <span>🧠</span> Cognitive Assessment
+              </button>
+              <button class="cat-pill-btn" data-cat="communication">
+                <span>💬</span> Communication Assessment
+              </button>
+              <button class="cat-pill-btn" data-cat="coding">
+                <span>⚡</span> Coding Challenges
+              </button>
             </div>
           </div>
 
-          <h2 class="mcq-q-title" id="mcq-question-text">Loading question...</h2>
-
-          <!-- Optional Code Snippet -->
-          <div class="code-snippet-box" id="mcq-code-snippet" style="display: none; margin-bottom: 1.25rem;"></div>
-
-          <!-- Options Grid -->
-          <div class="mcq-options-grid" id="mcq-options-container">
-            <!-- 4 Option buttons rendered here -->
+          <!-- Step 2: Select Subject -->
+          <div style="margin-bottom: 1rem;">
+            <div style="margin-bottom: 0.5rem;">
+              <span style="font-size: 0.85rem; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 0.4rem;">
+                <span class="step-num-badge">2</span> Select Subject:
+              </span>
+            </div>
+            <div class="interview-subject-pills" id="interview-subject-pills" style="display: flex; gap: 0.4rem; flex-wrap: wrap;">
+              <!-- Dynamically populated based on active category -->
+            </div>
           </div>
 
-          <!-- Explanation Box (Initially Hidden) -->
-          <div class="mcq-explanation-box" id="mcq-explanation" style="display: none;"></div>
+          <!-- Step 3 & 4: Level + Format Mode + Generate Button -->
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; justify-content: space-between; border-top: 1px solid var(--border-color); padding-top: 0.9rem;">
+            <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+              <!-- Level Selector -->
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-muted);"><span class="step-num-badge">3</span> Level:</span>
+                <div class="interview-diff-pills" id="interview-diff-pills" style="display: flex; gap: 0.3rem;">
+                  <button class="diff-pill-btn active" data-diff="all">🎯 All</button>
+                  <button class="diff-pill-btn" data-diff="Easy">🟢 Easy</button>
+                  <button class="diff-pill-btn" data-diff="Medium">🟡 Medium</button>
+                  <button class="diff-pill-btn" data-diff="Hard">🔥 Hard</button>
+                </div>
+              </div>
 
-          <!-- Card Footer -->
-          <div class="mcq-footer-nav" style="margin-top: 1.5rem;">
-            <div style="font-size: 0.9rem; font-weight: 600; color: var(--text-secondary);" id="mcq-current-score">
-              Score: 0 / 0
+              <!-- Mode Switcher -->
+              <div style="display: flex; align-items: center; gap: 0.4rem;">
+                <span style="font-size: 0.82rem; font-weight: 600; color: var(--text-muted);"><span class="step-num-badge">4</span> Mode:</span>
+                <div class="interview-mode-pills" id="interview-mode-pills" style="display: flex; gap: 0.3rem;">
+                  <button class="mode-pill-btn active" data-mode="qa" id="mode-btn-qa">
+                    <span>📖</span> Questions + Answers
+                  </button>
+                  <button class="mode-pill-btn" data-mode="quiz" id="mode-btn-quiz">
+                    <span>🎯</span> Interactive Quiz
+                  </button>
+                </div>
+              </div>
             </div>
-            <button class="btn btn-primary" id="mcq-next-btn" style="display: none;">
-              <span>Next Question</span> <span>→</span>
-            </button>
+
+            <!-- Action Button -->
+            <div>
+              <button class="btn btn-primary" id="interview-generate-btn" style="padding: 0.5rem 1.25rem; font-weight: 700; font-size: 0.9rem;">
+                <span>⚡</span> Generate Questions
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- Quiz Completion Card (Initially Hidden) -->
-        <div class="mcq-question-card" id="mcq-summary-card" style="display: none; text-align: center; padding: 3rem 2rem;">
-          <div style="font-size: 3.5rem; margin-bottom: 1rem;">🏆</div>
-          <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem;" id="mcq-summary-title">Quiz Completed!</h2>
-          <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 1.1rem;" id="mcq-summary-subtitle">
-            You scored 5 out of 5!
-          </p>
-          <div style="display: flex; justify-content: center; gap: 1rem;">
-            <button class="btn btn-primary" id="mcq-restart-btn">
-              <span>🔄</span> Take Another Quiz
+        <!-- VIEW MODE 1: QUESTIONS + ANSWERS LIST -->
+        <div id="interview-qa-view" class="interview-view-container">
+          <!-- Summary count bar -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <div style="font-size: 0.9rem; font-weight: 600; color: var(--text-secondary);" id="qa-results-count">
+              Showing generated questions...
+            </div>
+            <button class="btn btn-secondary" id="qa-expand-all-btn" style="font-size: 0.8rem; padding: 0.3rem 0.75rem;">
+              <span>👁️</span> Expand All Answers
             </button>
-            <button class="btn btn-secondary" id="mcq-goto-lab-btn">
-              <span>💻</span> Go to Practice Lab
-            </button>
+          </div>
+
+          <!-- Questions List -->
+          <div id="interview-qa-list" class="interview-qa-list" style="display: flex; flex-direction: column; gap: 1rem;">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- VIEW MODE 2: INTERACTIVE QUIZ (Existing Quiz Functionality Seamlessly Preserved) -->
+        <div id="interview-quiz-view" class="interview-view-container" style="display: none;">
+          <!-- Progress Bar -->
+          <div class="mcq-progress-bar-wrap">
+            <div class="mcq-progress-bar-fill" id="mcq-progress-fill"></div>
+          </div>
+
+          <!-- Question Card -->
+          <div class="mcq-question-card" id="mcq-card">
+            <div class="mcq-q-meta">
+              <span style="font-size: 0.88rem; font-weight: 700; color: var(--accent-cyan);" id="mcq-q-counter">
+                Question 1 of 5
+              </span>
+              <div style="display: flex; gap: 0.5rem;" id="mcq-q-badges">
+                <span class="badge badge-tag" id="mcq-lang-badge">Java</span>
+                <span class="badge badge-medium" id="mcq-diff-badge">Medium</span>
+              </div>
+            </div>
+
+            <h2 class="mcq-q-title" id="mcq-question-text">Loading question...</h2>
+
+            <!-- Optional Code Snippet -->
+            <div class="code-snippet-box" id="mcq-code-snippet" style="display: none; margin-bottom: 1.25rem;"></div>
+
+            <!-- Options Grid -->
+            <div class="mcq-options-grid" id="mcq-options-container">
+              <!-- 4 Option buttons rendered here -->
+            </div>
+
+            <!-- Explanation Box (Initially Hidden) -->
+            <div class="mcq-explanation-box" id="mcq-explanation" style="display: none;"></div>
+
+            <!-- Card Footer -->
+            <div class="mcq-footer-nav" style="margin-top: 1.5rem;">
+              <div style="font-size: 0.9rem; font-weight: 600; color: var(--text-secondary);" id="mcq-current-score">
+                Score: 0 / 0
+              </div>
+              <button class="btn btn-primary" id="mcq-next-btn" style="display: none;">
+                <span>Next Question</span> <span>→</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Quiz Completion Card (Initially Hidden) -->
+          <div class="mcq-question-card" id="mcq-summary-card" style="display: none; text-align: center; padding: 3rem 2rem;">
+            <div style="font-size: 3.5rem; margin-bottom: 1rem;">🏆</div>
+            <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem;" id="mcq-summary-title">Quiz Completed!</h2>
+            <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 1.1rem;" id="mcq-summary-subtitle">
+              You scored 5 out of 5!
+            </p>
+            <div style="display: flex; justify-content: center; gap: 1rem;">
+              <button class="btn btn-primary" id="mcq-restart-btn">
+                <span>🔄</span> Take Another Quiz
+              </button>
+              <button class="btn btn-secondary" id="mcq-goto-lab-btn">
+                <span>💻</span> Go to Practice Lab
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </section>
+
 
     <!-- VIEW 4: COURSES (Interactive Learning Tracks) -->
     <section class="view-section" id="view-courses">

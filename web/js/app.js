@@ -17,7 +17,13 @@ let state = {
   solvedProblemIds: new Set(),
   playgroundLang: 'java',
   workbenchLang: 'java',
-  // MCQ state
+  // Interview Preparation & MCQ state
+  interviewCategory: 'technical',
+  interviewSubject: 'all',
+  interviewLevel: 'all',
+  interviewMode: 'qa',
+  interviewQuestions: [],
+  interviewAnswersExpanded: false,
   mcqQuestions: [],
   mcqIndex: 0,
   mcqScore: 0,
@@ -701,43 +707,126 @@ function setupWorkbenchEvents() {
   });
 }
 
-// ==================== MCQ QUIZ MODULE ====================
+// ==================== INTERVIEW PREPARATION & QUESTION GENERATOR MODULE ====================
+const INTERVIEW_SUBJECTS = {
+  technical: [
+    { id: 'all', name: '🌐 All Technical' },
+    { id: 'java', name: '☕ Java' },
+    { id: 'python', name: '🐍 Python' },
+    { id: 'c', name: '⚙️ C' },
+    { id: 'cpp', name: '⚡ C++' },
+    { id: 'sql', name: '🗄️ SQL & Databases' },
+    { id: 'dsa', name: '🌳 Data Structures' },
+    { id: 'dbms', name: '📊 DBMS' },
+    { id: 'oop', name: '🧩 OOP' },
+    { id: 'networks', name: '🌐 Computer Networks' }
+  ],
+  hr: [
+    { id: 'all', name: '👔 All HR Topics' },
+    { id: 'about-me', name: '👋 Tell Me About Yourself' },
+    { id: 'strengths-weaknesses', name: '💪 Strengths & Weaknesses' },
+    { id: 'why-hire-you', name: '🎯 Why Should We Hire You?' },
+    { id: 'why-company', name: '🏢 Why Join This Company?' },
+    { id: 'five-years', name: '🚀 Where in 5 Years?' },
+    { id: 'teamwork-communication', name: '🤝 Teamwork & Conflict' }
+  ],
+  cognitive: [
+    { id: 'all', name: '🧠 All Cognitive' },
+    { id: 'quant-aptitude', name: '📐 Quantitative Aptitude' },
+    { id: 'logical-reasoning', name: '🔍 Logical Reasoning' }
+  ],
+  communication: [
+    { id: 'all', name: '💬 All Communication' },
+    { id: 'verbal-comm', name: '✉️ Executive Email' },
+    { id: 'workplace-comm', name: '👥 Stakeholder Communication' }
+  ],
+  coding: [
+    { id: 'all', name: '💻 All Coding Challenges' },
+    { id: 'trapping-rain-water', name: '🌧️ Trapping Rain Water' },
+    { id: 'sliding-window-max', name: '🪟 Sliding Window Maximum' }
+  ]
+};
+
 function setupMcqEvents() {
-  // Language pills
-  const pillsContainer = document.getElementById('mcq-lang-pills');
-  if (pillsContainer) {
-    pillsContainer.querySelectorAll('.lang-pill-btn').forEach(btn => {
+  // Category tabs: Technical, HR, Cognitive, Communication, Coding
+  const catTabs = document.getElementById('interview-category-tabs');
+  if (catTabs) {
+    catTabs.querySelectorAll('.cat-pill-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        pillsContainer.querySelectorAll('.lang-pill-btn').forEach(b => b.classList.remove('active'));
+        catTabs.querySelectorAll('.cat-pill-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        state.mcqLang = btn.getAttribute('data-lang');
-        loadMcqQuestions(state.mcqLang, state.mcqDifficulty);
+        state.interviewCategory = btn.getAttribute('data-cat');
+        state.interviewSubject = 'all';
+        renderSubjectPills(state.interviewCategory);
+        loadInterviewQuestions();
       });
     });
   }
 
-  // Difficulty pills
-  const diffPillsContainer = document.getElementById('mcq-diff-pills');
-  if (diffPillsContainer) {
-    diffPillsContainer.querySelectorAll('.diff-pill-btn').forEach(btn => {
+  // Level selector: All, Easy, Medium, Hard
+  const diffPills = document.getElementById('interview-diff-pills');
+  if (diffPills) {
+    diffPills.querySelectorAll('.diff-pill-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        diffPillsContainer.querySelectorAll('.diff-pill-btn').forEach(b => b.classList.remove('active'));
+        diffPills.querySelectorAll('.diff-pill-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        state.mcqDifficulty = btn.getAttribute('data-diff');
-        loadMcqQuestions(state.mcqLang, state.mcqDifficulty);
+        state.interviewLevel = btn.getAttribute('data-diff');
+        loadInterviewQuestions();
       });
     });
   }
 
-  // Refresh button: fetches a fresh set of randomized questions
-  const refreshBtn = document.getElementById('mcq-refresh-btn');
+  // Mode switcher: Q&A (Questions + Answers) vs Interactive Quiz
+  const modePills = document.getElementById('interview-mode-pills');
+  if (modePills) {
+    modePills.querySelectorAll('.mode-pill-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        modePills.querySelectorAll('.mode-pill-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        state.interviewMode = btn.getAttribute('data-mode');
+        updateInterviewViewMode();
+        loadInterviewQuestions();
+      });
+    });
+  }
+
+  // Generate Questions button
+  const genBtn = document.getElementById('interview-generate-btn');
+  if (genBtn) {
+    genBtn.addEventListener('click', () => {
+      loadInterviewQuestions();
+    });
+  }
+
+  // Refresh / Fresh set button
+  const refreshBtn = document.getElementById('interview-refresh-btn');
   if (refreshBtn) {
     refreshBtn.addEventListener('click', () => {
-      loadMcqQuestions(state.mcqLang, state.mcqDifficulty);
+      loadInterviewQuestions();
     });
   }
 
-  // Next question button
+  // Expand / Collapse all answers button
+  const expandAllBtn = document.getElementById('qa-expand-all-btn');
+  if (expandAllBtn) {
+    expandAllBtn.addEventListener('click', () => {
+      state.interviewAnswersExpanded = !state.interviewAnswersExpanded;
+      document.querySelectorAll('#interview-qa-list .model-answer-drawer').forEach(drawer => {
+        drawer.style.display = state.interviewAnswersExpanded ? 'block' : 'none';
+      });
+      document.querySelectorAll('#interview-qa-list .toggle-answer-btn').forEach(btn => {
+        const icon = btn.querySelector('.toggle-icon');
+        const text = btn.querySelector('.toggle-text');
+        if (icon) icon.textContent = state.interviewAnswersExpanded ? '🙈' : '👁️';
+        if (text) text.textContent = state.interviewAnswersExpanded ? 'Hide Model Answer' : 'Show Model Answer & Strategy';
+      });
+      expandAllBtn.innerHTML = state.interviewAnswersExpanded 
+        ? '<span>🙈</span> Collapse All Answers' 
+        : '<span>👁️</span> Expand All Answers';
+    });
+  }
+
+  // Quiz next question button
   const nextBtn = document.getElementById('mcq-next-btn');
   if (nextBtn) {
     nextBtn.addEventListener('click', () => {
@@ -754,11 +843,11 @@ function setupMcqEvents() {
   const restartBtn = document.getElementById('mcq-restart-btn');
   if (restartBtn) {
     restartBtn.addEventListener('click', () => {
-      loadMcqQuestions(state.mcqLang, state.mcqDifficulty);
+      loadInterviewQuestions();
     });
   }
 
-  // Go to lab button
+  // Go to lab button from quiz completion
   const gotoLabBtn = document.getElementById('mcq-goto-lab-btn');
   if (gotoLabBtn) {
     gotoLabBtn.addEventListener('click', () => {
@@ -766,21 +855,222 @@ function setupMcqEvents() {
     });
   }
 
-  // Initial load
-  loadMcqQuestions('all', 'all');
+  // Initial population of subjects and questions
+  renderSubjectPills(state.interviewCategory);
+  loadInterviewQuestions();
 }
 
-async function loadMcqQuestions(lang = state.mcqLang, difficulty = state.mcqDifficulty) {
-  state.mcqLang = lang || 'all';
-  state.mcqDifficulty = difficulty || 'all';
+function updateInterviewViewMode() {
+  const qaView = document.getElementById('interview-qa-view');
+  const quizView = document.getElementById('interview-quiz-view');
+  if (state.interviewMode === 'quiz') {
+    if (qaView) qaView.style.display = 'none';
+    if (quizView) quizView.style.display = 'block';
+  } else {
+    if (qaView) qaView.style.display = 'block';
+    if (quizView) quizView.style.display = 'none';
+  }
+}
 
+function renderSubjectPills(category) {
+  const container = document.getElementById('interview-subject-pills');
+  if (!container) return;
+  container.innerHTML = '';
+
+  const subjects = INTERVIEW_SUBJECTS[category] || INTERVIEW_SUBJECTS.technical;
+  subjects.forEach(sub => {
+    const btn = document.createElement('button');
+    btn.className = `subject-pill-btn ${sub.id === state.interviewSubject ? 'active' : ''}`;
+    btn.setAttribute('data-subject', sub.id);
+    btn.textContent = sub.name;
+
+    btn.addEventListener('click', () => {
+      container.querySelectorAll('.subject-pill-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      state.interviewSubject = sub.id;
+      loadInterviewQuestions();
+    });
+
+    container.appendChild(btn);
+  });
+}
+
+async function loadInterviewQuestions() {
+  updateInterviewViewMode();
+
+  if (state.interviewMode === 'quiz') {
+    await loadInterviewQuizMode();
+    return;
+  }
+
+  // Q&A Mode
+  const listContainer = document.getElementById('interview-qa-list');
+  const countEl = document.getElementById('qa-results-count');
+  if (countEl) countEl.textContent = 'Generating interview questions and model answers...';
+  if (listContainer) {
+    listContainer.innerHTML = '<div style="text-align: center; padding: 2rem; color: var(--accent-cyan); font-weight: 600;">⚡ Generating Questions & Model Responses...</div>';
+  }
+
+  try {
+    const url = `/api/interview/questions?category=${encodeURIComponent(state.interviewCategory)}&subject=${encodeURIComponent(state.interviewSubject)}&level=${encodeURIComponent(state.interviewLevel)}&limit=30`;
+    const res = await fetch(url);
+    if (res.ok) {
+      state.interviewQuestions = await res.json();
+      renderInterviewQaList(state.interviewQuestions);
+    } else {
+      if (listContainer) listContainer.innerHTML = '<div style="color: var(--accent-rose); padding: 1.5rem; text-align: center;">Failed to generate questions. Please try again.</div>';
+    }
+  } catch (err) {
+    if (listContainer) listContainer.innerHTML = `<div style="color: var(--accent-rose); padding: 1.5rem; text-align: center;">Error connecting to interview question service: ${escapeHtml(err.message)}</div>`;
+  }
+}
+
+function renderInterviewQaList(questions) {
+  const container = document.getElementById('interview-qa-list');
+  const countEl = document.getElementById('qa-results-count');
+  if (!container) return;
+  container.innerHTML = '';
+
+  if (!questions || questions.length === 0) {
+    if (countEl) countEl.textContent = '0 questions found';
+    container.innerHTML = `
+      <div style="text-align: center; padding: 3rem 1rem; color: var(--text-muted); background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color);">
+        <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔍</div>
+        <div style="font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin-bottom: 0.25rem;">No questions match this filter</div>
+        <div style="font-size: 0.88rem;">Try selecting "All Subjects" or choosing a different difficulty level.</div>
+      </div>
+    `;
+    return;
+  }
+
+  if (countEl) countEl.textContent = `Showing ${questions.length} interview questions with comprehensive model answers`;
+
+  questions.forEach((q, idx) => {
+    const card = document.createElement('div');
+    card.className = 'interview-qa-card';
+    card.id = `qa-card-${q.id || idx}`;
+
+    const diffClass = q.level === 'Easy' ? 'badge-easy' : (q.level === 'Hard' ? 'badge-hard' : 'badge-medium');
+    const isCoding = q.category === 'coding' || q.subject === 'trapping-rain-water' || q.subject === 'sliding-window-max';
+
+    let codeBlockHtml = '';
+    if (q.codeSnippet && q.codeSnippet.trim()) {
+      codeBlockHtml = `
+        <div class="code-snippet-box" style="margin-bottom: 1rem;">
+          <pre style="margin: 0; font-family: var(--font-mono); font-size: 0.85rem; line-height: 1.5; color: #e2e8f0; overflow-x: auto;"><code>${escapeHtml(q.codeSnippet)}</code></pre>
+        </div>
+      `;
+    }
+
+    let keyPointsHtml = '';
+    if (q.keyPoints && q.keyPoints.length > 0) {
+      keyPointsHtml = `
+        <div style="margin-top: 1rem;">
+          <div class="answer-section-title" style="color: var(--accent-green);">
+            <span>✅</span> Key Points You Must Cover
+          </div>
+          <div class="key-points-grid">
+            ${q.keyPoints.map(kp => `
+              <div class="key-point-item">
+                <span>✓</span>
+                <div>${escapeHtml(kp)}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    let tipHtml = '';
+    if (q.interviewerTips && q.interviewerTips.trim()) {
+      tipHtml = `
+        <div style="margin-top: 1rem;">
+          <div class="interviewer-tip-callout">
+            <strong style="color: var(--accent-amber);">💡 Interviewer Insight & Tip:</strong> ${escapeHtml(q.interviewerTips)}
+          </div>
+        </div>
+      `;
+    }
+
+    let codingActionBtn = '';
+    if (isCoding) {
+      const probId = q.subject;
+      codingActionBtn = `
+        <div style="margin-bottom: 0.75rem;">
+          <button class="btn btn-primary open-lab-btn" data-prob-id="${probId}" style="padding: 0.35rem 0.85rem; font-size: 0.82rem;">
+            <span>💻</span> Open & Solve in Practice Lab
+          </button>
+        </div>
+      `;
+    }
+
+    card.innerHTML = `
+      <div class="qa-card-meta">
+        <div style="display: flex; gap: 0.4rem; align-items: center; flex-wrap: wrap;">
+          <span class="badge badge-tag" style="text-transform: uppercase;">${escapeHtml(q.category)}</span>
+          <span class="badge" style="background: rgba(99, 102, 241, 0.15); color: #a5b4fc; font-weight: 600;">${escapeHtml(q.subject)}</span>
+          <span class="badge ${diffClass}">${escapeHtml(q.level || 'Medium')}</span>
+        </div>
+        <div style="font-size: 0.8rem; font-weight: 600; color: var(--text-muted);">Question #${idx + 1}</div>
+      </div>
+
+      <h3 class="qa-card-title">${escapeHtml(q.title || 'Interview Question')}</h3>
+      <div class="qa-card-prompt">${escapeHtml(q.question)}</div>
+
+      ${codeBlockHtml}
+      ${codingActionBtn}
+
+      <div style="display: flex; justify-content: flex-start; margin-top: 0.5rem;">
+        <button class="btn btn-secondary toggle-answer-btn" data-target="drawer-${idx}" style="font-size: 0.82rem; padding: 0.35rem 0.85rem;">
+          <span class="toggle-icon">👁️</span> <span class="toggle-text">Show Model Answer & Strategy</span>
+        </button>
+      </div>
+
+      <div class="model-answer-drawer" id="drawer-${idx}" style="display: ${state.interviewAnswersExpanded ? 'block' : 'none'};">
+        <div class="answer-section-title" style="color: var(--accent-cyan);">
+          <span>🌟</span> Ideal Model Answer / Response
+        </div>
+        <div class="model-answer-content">${escapeHtml(q.modelAnswer)}</div>
+        ${keyPointsHtml}
+        ${tipHtml}
+      </div>
+    `;
+
+    // Toggle button handler
+    const toggleBtn = card.querySelector('.toggle-answer-btn');
+    const drawer = card.querySelector('.model-answer-drawer');
+    const toggleIcon = toggleBtn.querySelector('.toggle-icon');
+    const toggleText = toggleBtn.querySelector('.toggle-text');
+
+    toggleBtn.addEventListener('click', () => {
+      const isOpen = drawer.style.display === 'block';
+      drawer.style.display = isOpen ? 'none' : 'block';
+      toggleIcon.textContent = isOpen ? '👁️' : '🙈';
+      toggleText.textContent = isOpen ? 'Show Model Answer & Strategy' : 'Hide Model Answer';
+    });
+
+    // Coding action button handler
+    const labBtn = card.querySelector('.open-lab-btn');
+    if (labBtn) {
+      labBtn.addEventListener('click', () => {
+        const probId = labBtn.getAttribute('data-prob-id');
+        switchView('tab-problems', 'view-problems');
+        openProblem(probId);
+      });
+    }
+
+    container.appendChild(card);
+  });
+}
+
+async function loadInterviewQuizMode() {
   const card = document.getElementById('mcq-card');
   const summaryCard = document.getElementById('mcq-summary-card');
   if (card) card.style.display = 'block';
   if (summaryCard) summaryCard.style.display = 'none';
 
   const qText = document.getElementById('mcq-question-text');
-  if (qText) qText.textContent = `Fetching dynamic ${state.mcqDifficulty !== 'all' ? state.mcqDifficulty : ''} questions from API...`;
+  if (qText) qText.textContent = 'Preparing interactive interview quiz questions...';
 
   const codeBox = document.getElementById('mcq-code-snippet');
   if (codeBox) codeBox.style.display = 'none';
@@ -796,20 +1086,34 @@ async function loadMcqQuestions(lang = state.mcqLang, difficulty = state.mcqDiff
   state.mcqAnswered = false;
 
   try {
-    const url = `/api/mcq?language=${encodeURIComponent(state.mcqLang)}&difficulty=${encodeURIComponent(state.mcqDifficulty)}&count=5`;
+    const url = `/api/interview/questions?category=${encodeURIComponent(state.interviewCategory)}&subject=${encodeURIComponent(state.interviewSubject)}&level=${encodeURIComponent(state.interviewLevel)}&limit=10`;
     const res = await fetch(url);
     if (res.ok) {
-      state.mcqQuestions = await res.json();
-      if (!state.mcqQuestions || state.mcqQuestions.length === 0) {
-        if (qText) qText.textContent = `No ${state.mcqDifficulty} questions available right now for this selection. Try switching difficulty or selecting "All Languages".`;
-      } else {
+      const data = await res.json();
+      const withOptions = data.filter(d => d.options && d.options.length >= 2);
+      if (withOptions.length > 0) {
+        state.mcqQuestions = withOptions.map(item => ({
+          id: item.id,
+          language: item.subject,
+          difficulty: item.level,
+          question: item.question,
+          codeSnippet: item.codeSnippet,
+          options: item.options,
+          correctIndex: item.correctOptionIndex >= 0 ? item.correctOptionIndex : 0,
+          explanation: item.modelAnswer
+        }));
         renderMcqQuestion();
+      } else {
+        // Fallback to general mcq API if chosen category has only open-ended questions
+        const mcqRes = await fetch(`/api/mcq?language=${encodeURIComponent(state.interviewSubject === 'all' ? 'all' : state.interviewSubject)}&difficulty=${encodeURIComponent(state.interviewLevel)}&count=5`);
+        if (mcqRes.ok) {
+          state.mcqQuestions = await mcqRes.json();
+          renderMcqQuestion();
+        }
       }
-    } else {
-      if (qText) qText.textContent = 'Failed to load questions. Please try again.';
     }
   } catch (err) {
-    if (qText) qText.textContent = 'Error connecting to question API: ' + err.message;
+    if (qText) qText.textContent = 'Error loading quiz: ' + err.message;
   }
 }
 

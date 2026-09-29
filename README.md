@@ -45,6 +45,17 @@ A complete interactive coding, learning, and automated grading platform called *
    - Question palette with status indicators (Attempted, Solved).
    - Instant scoring report with grade breakdown and certificates.
 
+6. **🎯 AI Interview Preparation & Question Generator**
+   - **Select Category → Technical / HR / Cognitive / Communication / Coding**
+   - **Select Subject**:
+     - *Technical*: Java, Python, C, C++, SQL, Data Structures, DBMS, OOP, Computer Networks.
+     - *HR & Behavioral*: Tell me about yourself, Strengths & weaknesses, Why should we hire you?, Why do you want to join this company?, Where do you see yourself in 5 years?, Teamwork & communication.
+     - *Cognitive Assessment*: Quantitative aptitude, relative speed/distance, logical constraint deduction puzzles.
+     - *Communication Assessment*: Executive email incident responses, stakeholder delay management.
+     - *Live Coding Challenges*: **Trapping Rain Water** (Hard, Two Pointers O(n)) and **Sliding Window Maximum** (Hard, Monotonic Deque O(n)).
+   - **Select Level**: Easy / Medium / Hard Mode.
+   - **Generate Questions → Complete Questions + Answers**: Includes ideal model responses (STAR methodology for HR), key points candidate checklist, and interviewer evaluation insights.
+
 7. **🔐 User Authentication & Session Security**
    - Secure student registration (**Sign Up**) and login (**Sign In**) with salted SHA-256 encryption.
    - Session authentication with secure bearer tokens and persistent profile state.

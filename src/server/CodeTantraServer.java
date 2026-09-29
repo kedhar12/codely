@@ -41,6 +41,7 @@ public class CodeTantraServer {
         server.createContext("/api/assessments", new AssessmentsHandler());
         server.createContext("/api/dashboard", new DashboardHandler());
         server.createContext("/api/mcq", new McqHandler());
+        server.createContext("/api/interview", new InterviewHandler());
         server.createContext("/api/reset", new ResetHandler());
 
         // Static Web Files
@@ -373,6 +374,53 @@ public class CodeTantraServer {
 
             List<McqQuestion> questions = McqService.getDynamicQuestions(lang, difficulty, count);
             sendJson(exchange, 200, questions);
+        }
+    }
+
+    static class InterviewHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            if ("OPTIONS".equalsIgnoreCase(exchange.getRequestMethod())) {
+                sendCorsAndHeaders(exchange, 204, "text/plain", new byte[0]);
+                return;
+            }
+
+            String path = exchange.getRequestURI().getPath();
+            if (path.endsWith("/meta")) {
+                sendJson(exchange, 200, InterviewService.getMetadata());
+                return;
+            }
+
+            String category = "all";
+            String subject = "all";
+            String level = "all";
+            int limit = 30;
+
+            String query = exchange.getRequestURI().getRawQuery();
+            if (query != null) {
+                for (String param : query.split("&")) {
+                    String[] pair = param.split("=");
+                    if (pair.length == 2) {
+                        String key = pair[0].toLowerCase();
+                        String val = java.net.URLDecoder.decode(pair[1], java.nio.charset.StandardCharsets.UTF_8);
+                        if ("category".equals(key)) {
+                            category = val;
+                        } else if ("subject".equals(key)) {
+                            subject = val;
+                        } else if ("level".equals(key) || "difficulty".equals(key)) {
+                            level = val;
+                        } else if ("limit".equals(key) || "count".equals(key)) {
+                            try { limit = Integer.parseInt(val); } catch (NumberFormatException ignored) {}
+                        }
+                    }
+                }
+            }
+
+            List<InterviewService.InterviewQuestion> questions = InterviewService.getQuestions(category, subject, level, limit);
+            List<Map<String, Object>> result = questions.stream()
+                .map(InterviewService.InterviewQuestion::toMap)
+                .toList();
+            sendJson(exchange, 200, result);
         }
     }
 

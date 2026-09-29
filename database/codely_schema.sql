@@ -237,7 +237,21 @@ INSERT INTO `problems` (`id`, `title`, `difficulty`, `category`, `description`, 
 'Table `employees` already exists with test rows.',
 'Columns: name, department, salary',
 'Salaries are positive integers.',
-'INSERT INTO employees VALUES (1, ''Alice'', ''Engineering'', 95000), (2, ''Bob'', ''Support'', 50000);', 'Alice|Engineering|95000', 50);
+'INSERT INTO employees VALUES (1, ''Alice'', ''Engineering'', 95000), (2, ''Bob'', ''Support'', 50000);', 'Alice|Engineering|95000', 50),
+
+('trapping-rain-water', 'Trapping Rain Water', 'Hard', 'Arrays & Two Pointers',
+'Given `n` non-negative integers representing an elevation map where the width of each bar is `1`, compute how much water it can trap after raining.',
+'Line 1: integer n\nLine 2: n space-separated integers',
+'Print a single integer representing total units of trapped rain water.',
+'1 <= n <= 10^5\n0 <= height[i] <= 10^5',
+'12\n0 1 0 2 1 0 1 3 2 1 2 1', '6', 100),
+
+('sliding-window-max', 'Sliding Window Maximum', 'Hard', 'Monotonic Queue & Data Structures',
+'Given an array of integers `nums`, there is a sliding window of size `k` moving from left to right. Return the max sliding window.',
+'Line 1: integers n and k\nLine 2: n space-separated integers',
+'Print maximum value in each window separated by spaces.',
+'1 <= n <= 10^5\n1 <= k <= n\n-10^4 <= nums[i] <= 10^4',
+'8 3\n1 3 -1 -3 5 3 6 7', '3 3 5 5 6 7', 100);
 
 -- Seed Test Cases for Problems
 INSERT INTO `test_cases` (`problem_id`, `input_data`, `expected_output`, `is_hidden`, `description`) VALUES
@@ -258,7 +272,18 @@ INSERT INTO `test_cases` (`problem_id`, `input_data`, `expected_output`, `is_hid
 ('fibonacci-number', '0', '0', FALSE, 'Base case 0'),
 ('fibonacci-number', '1', '1', FALSE, 'Base case 1'),
 ('fibonacci-number', '10', '55', FALSE, 'Standard case 10'),
-('fibonacci-number', '30', '832040', TRUE, 'Hidden: larger n');
+('fibonacci-number', '30', '832040', TRUE, 'Hidden: larger n'),
+
+('trapping-rain-water', '12\n0 1 0 2 1 0 1 3 2 1 2 1', '6', FALSE, 'Standard peaks and valleys elevation map'),
+('trapping-rain-water', '6\n4 2 0 3 2 5', '9', FALSE, 'Deep basin between 4 and 5'),
+('trapping-rain-water', '5\n3 2 1 0 0', '0', TRUE, 'Decreasing heights trap 0 units'),
+('trapping-rain-water', '7\n0 2 0 2 0 2 0', '4', TRUE, 'Two separate basins trapping 2 units each'),
+
+('sliding-window-max', '8 3\n1 3 -1 -3 5 3 6 7', '3 3 5 5 6 7', FALSE, 'Standard sliding window size 3'),
+('sliding-window-max', '1 1\n1', '1', FALSE, 'Single element array'),
+('sliding-window-max', '4 2\n9 11 8 5', '11 11 8', TRUE, 'Decreasing-increasing elements'),
+('sliding-window-max', '6 4\n4 3 2 1 5 6', '4 5 6', TRUE, 'Window size 4 with ascending suffix');
+
 
 -- Seed Courses & Chapters
 INSERT INTO `courses` (`id`, `title`, `category`, `description`, `icon`, `total_chapters`) VALUES
